@@ -26,3 +26,20 @@ def create(request):
     )
     serializer = SignupSerializers(objects, many = False)
     return Response(serializer.data)
+
+
+@api_view(['PUT'])
+def update(request, pk):
+    inFoToUpdate = request.data
+    objects = SignUp.objects.get(id = pk)
+    serializer = SignupSerializers(objects, data = inFoToUpdate)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+def delete (request, pk):
+    objects = SignUp.objects.get(id = pk)
+    objects.delete()
+    return Response(f'{pk} have been deleted')
