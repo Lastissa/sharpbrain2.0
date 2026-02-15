@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-!&@!@@o9vh-iby*_q!e6yn4l4^s+4@q8e5r_oogq-my!-g9xrs
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'sharpbrainApi',
-    'rest_framework' 
+    'rest_framework' ,
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -49,6 +50,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",#from coresheader import
+    "django.middleware.common.CommonMiddleware",#from coresheader import
 ]
 
 ROOT_URLCONF = 'sharpbrainBackend.urls'
@@ -117,3 +120,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+CORS_ALLOW_ALL_ORIGINS = True
