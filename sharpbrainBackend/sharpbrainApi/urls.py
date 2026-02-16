@@ -9,6 +9,7 @@ urlpatterns = [
     path('jamb_subject_combination/', views.jambAcceptedSubjects),
     path('universities_name/<str:pk>/', views.universities_nameDelPut),
     path('course_names/<str:pk>/', views.coursesOfferedDelPut),
+    path('jamb_subject_combination/<str:pk>/', views.jambAcceptedSubjectsPutDel),
     # path('update/<str:pk>',views.update),
     # path('delete/<str:pk>',views.delete),
     # path('<str:pk>/', views.data),
