@@ -51,7 +51,7 @@ def show_data(request):
     
     
     
-@api_view(['POST', 'GET', 'PATCH'])
+@api_view(['POST', 'GET',])
 def universities_name(request):
     if request.method == 'POST':
         dataToUpload = request.data.get('name_of_universities', '').lower().strip()# Used the empty string incase django did not get uni names and it cannot return the nonetype.lowercase
@@ -75,12 +75,15 @@ def   universities_nameDelPut(request, pk):
             return Response(
             {'result' : f'id{pk} have been deleted'}
         )
+        
        elif request.method == 'PUT':
            objects = Universities_name.objects.get(id = pk)
-           serializer = universitiesNameSerializer(objects, data = request.body)
+           serializer = universitiesNameSerializer(objects, data = request.data)
            if serializer.is_valid():
                serializer.save()
            return Response(serializer.data)
+       return(Response.errors)
+           
        
 @api_view(['GET','POST'])
 def coursesOffered(request):
@@ -102,7 +105,7 @@ def coursesOffered(request):
 def coursesOfferedDelPut(request, pk):
     if request.method == 'PUT':
         objects = CourseNames.objects.get(id = pk)
-        serializer = CourseNameSerializer(objects, data=request.data)
+        serializer = CourseNameSerializer(objects, data=request.data, many = False)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -130,3 +133,17 @@ course  is {request.data['course_name']}""")
         objects = JambAcceptedSubjectCombination.objects.all()
         serializer = JambAcceptedSubjectCombinationSerializer(objects, many = True)
         return Response(serializer.data)
+        
+        
+@api_view(["PUT", "DELETE"])
+def jambAcceptedSubjectsPutDel(request,pk):
+    if request.method == "DELETE":
+        pass
+    elif request.method == "PUT":
+        objects = JambAcceptedSubjectCombination.objects.get(id = pk)
+        serializer = JambAcceptedSubjectCombinationSerializer(objects, data = request.data, many = False)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.error)
+         
