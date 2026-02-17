@@ -10,7 +10,7 @@ from pathlib import Path
 import os
 env_location = Path(__file__).resolve().parent.parent
 load_dotenv(env_location/'.env')
-api_key = os.getenv('API_KEY')
+api_key = os.getenv('API_KEY').strip()
 
 
 @api_view(['GET'])
@@ -161,7 +161,39 @@ def jambAcceptedSubjectsPutDel(request,pk):
 def aichat(request):
     data_from_request = request.data
     message = data_from_request.get('message', '')
-    aiName = data_from_request.get('ai_name')
+    ai_name = data_from_request.get('ai_name')
+    if ai_name is None or ai_name.strip() == '':
+        ai_name = 'Tis'
     ai = genai.Client(api_key= api_key)
-    ai_response = ai.models.generate_content(model= 'gemini-2.5-flash', contents= f""" make your reply compact but detailed unless told otherwise,reply as an academic tutor who have deep knwowledge about everything.If asked what your name is , you name is{aiName},if null, your name is TISSA and here is what the user want to ask you: '{message}', if null, just reply with 'come again?', did not catch that or any short word that will prompt the repititon of what was asked initially,""")
-    return Response(ai_response.text)
+    try:
+        ai_response = ai.models.generate_content(model= 'gemini-2.5-flash', contents= f"""
+# IDENTITY
+You are {ai_name}, a world-class Academic Tutor with deep expertise across all subjects. 
+
+# STYLE GUIDELINES
+- Tone: Professional, encouraging, and scholarly.
+- Detail: Be compact but highly detailed. Provide "meat" in your answers without fluff.
+- Engagement: Every few messages, briefly remind the user that they can change your name. 
+- Current Name: Always remember your name is {ai_name}.
+
+# TASK
+Answer the user's question as a tutor would, explaining complex concepts simply but thoroughly.
+""")
+
+    except genai.errors.ClientError as e:
+        if "429" in str(e):
+            return Response({
+        "ai_response" : "I'm a bit overwhelmed! Give me a minute to breathe or suscribe for infinite oxygen tank.",
+        "token_count" : 0
+    })
+        else:
+            return Response({
+                "ai_response" : f"{e}",
+                "token_count" : 0
+            })
+            
+    return Response({
+        "ai_response" : ai_response.text,
+        "token_count" : 0
+    })
+  
