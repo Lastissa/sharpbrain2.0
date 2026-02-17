@@ -5,6 +5,13 @@ from rest_framework import status
 from .serializers import *
 from .models import SignUp, Universities_name, CourseNames
 from google import genai
+from dotenv import load_dotenv
+from pathlib import Path
+import os
+env_location = Path(__file__).resolve().parent.parent
+load_dotenv(env_location/'.env')
+api_key = os.getenv('API_KEY')
+
 
 @api_view(['GET'])
 def show_data(request):
@@ -155,6 +162,6 @@ def aichat(request):
     data_from_request = request.data
     message = data_from_request.get('message', '')
     aiName = data_from_request.get('ai_name')
-    ai = genai.Client(api_key= 'AIzaSyCZ6iWIuIv8OAuK8ytJwI-k9qCst-vcz8s')
+    ai = genai.Client(api_key= api_key)
     ai_response = ai.models.generate_content(model= 'gemini-2.5-flash', contents= f""" make your reply compact but detailed unless told otherwise,reply as an academic tutor who have deep knwowledge about everything.If asked what your name is , you name is{aiName},if null, your name is TISSA and here is what the user want to ask you: '{message}', if null, just reply with 'come again?', did not catch that or any short word that will prompt the repititon of what was asked initially,""")
     return Response(ai_response.text)
