@@ -26,9 +26,11 @@ class Universities_name(models.Model):
 class CourseNames(models.Model):
     name_of_uni = models.CharField(max_length=150, unique=True, blank=False, null=False)
     courses_offered = models.JSONField(default= list)
+    # critical_subjects = models.JSONField(default= list)
     
     
 class JambAcceptedSubjectCombination(models.Model):
     uni_name = models.CharField(max_length= 100,blank=False, null=False)
     course_name = models.CharField(max_length= 100,blank=False, null=False)
     subject_combination = models.JSONField(default=list, null= False)
+    core_subjects = models.JSONField(default=list, null= False)

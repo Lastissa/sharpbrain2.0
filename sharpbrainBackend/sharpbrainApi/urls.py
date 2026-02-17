@@ -7,6 +7,7 @@ urlpatterns = [
     path('universities_name/', views.universities_name),
     path('course_names/', views.coursesOffered),
     path('jamb_subject_combination/', views.jambAcceptedSubjects),
+    path('aichat/', views.aichat),
     path('universities_name/<str:pk>/', views.universities_nameDelPut),
     path('course_names/<str:pk>/', views.coursesOfferedDelPut),
     path('jamb_subject_combination/<str:pk>/', views.jambAcceptedSubjectsPutDel),
