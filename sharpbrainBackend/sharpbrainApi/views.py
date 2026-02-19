@@ -156,17 +156,25 @@ def jambAcceptedSubjectsPutDel(request,pk):
         return Response(serializer.error)
          
          
-
+ai = genai.Client(api_key= api_key)
 @api_view(['POST'])
 def aichat(request):
     data_from_request = request.data
     message = data_from_request.get('message', '')
-    ai_name = data_from_request.get('ai_name')
+    ai_name = data_from_request.get('ai_name', '')
+    history = data_from_request.get('history','')
+    
+    # print(f"Received message: {message}")
+    # print(f"Received AI name: {ai_name}")
+    # print(f"Received history: {history}")
+    
     if ai_name is None or ai_name.strip() == '':
         ai_name = 'Tis'
-    ai = genai.Client(api_key= api_key)
+    
+    
     try:
-        ai_response = ai.models.generate_content(model= 'gemini-2.5-flash', contents= f"""
+        if len(history['user']) == 0:
+            ai_response = ai.models.generate_content(model= 'gemini-2.5-flash', contents= f"""
 # IDENTITY
 You are {ai_name}, a world-class Academic Tutor with deep expertise across all subjects. 
 
@@ -178,8 +186,26 @@ You are {ai_name}, a world-class Academic Tutor with deep expertise across all s
 
 # TASK
 Answer the user's question as a tutor would, explaining complex concepts simply but thoroughly.
+user's question: {message}
 """)
 
+        
+        else:
+            print('true')
+            ai_response = ai.models.generate_content(model= 'gemini-2.5-flash', contents= f"""
+# STYLE GUIDELINES
+- Tone: Professional, encouraging, and scholarly.
+- Engagement: Every few messages, briefly remind the user that they can change your name And if your name is changed ?inform the user breifly as they changed your name in this current interaction, it wont be permenent unless they do the changes in 'app setting'. 
+- Current Name: Always remember your name is {ai_name}.
+
+#CHAT HISTORY
+    look into {history} for context on the user's learning journey and previous interactions. Use this to inform your response, ensuring continuity and relevance. where {history['user']} is the user's previous messages and {history['AI']} is your previous responses.
+    #task: 
+    
+    Answer the user's current question as a tutor would, building on the context from the chat history. Provide brief but detailed explanations and insights, ensuring your response is informed by the user's learning journey and previous interactions.
+    current question: {message}
+                                                      """)
+        
     except genai.errors.ClientError as e:
         if "429" in str(e):
             return Response({
