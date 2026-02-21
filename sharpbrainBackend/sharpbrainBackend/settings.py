@@ -1,3 +1,13 @@
+import dj_database_url
+import os
+from dotenv import load_dotenv
+
+
+load_dotenv()
+database_url = os.getenv('DATABASE_URL')
+if not database_url:
+    raise ValueError("DATABASE_URL environment variable is not set.")
+
 """
 Django settings for sharpbrainBackend project.
 
@@ -78,11 +88,22 @@ WSGI_APPLICATION = 'sharpbrainBackend.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+    'default' : {'ENGINE': 'django.db.backends.postgresql',
+    'HOST': os.getenv('HOST'),
+    'PORT': os.getenv('PORT'),
+    'USER': os.getenv('USER'),
+    'PASSWORD': os.getenv('PASSWORD'),
+    'NAME': os.getenv('DB_NAME'),
+    'CONN_MAX_AGE' : 600,
+    'OPTIONS' : {
+        'sslmode': 'require'
+    }}}
+        
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
+# }
 
 
 # Password validation
