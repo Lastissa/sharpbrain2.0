@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import *
-from .models import Universities_name, CourseNames
+from .models import Universities_name, CourseNames, SignUpData
 from google import genai
 from dotenv import load_dotenv
 from pathlib import Path
@@ -269,37 +269,46 @@ class UserCustomData(APIView):
     def get(self, request):
         user_email = request.data.get("email", "").upper()
         password = request.data.get("password")
-        userMainModel = signupData.objects.get(user__username = user_email)
-        if signupData.user.check_password(password):
-            serializer = UserSerializer(userMainModel, many = False)
-            return Response(serializer.data)
-    
+        userMainModel = SignUpData.objects.filter(user__username = user_email).first()#Could have used a try or except but this is the best appraoch as per it returns none, and the .first() literally mean ut should return the first item it find with the said data
+        if userMainModel:
+            if userMainModel.user.check_password(password):
+                serializer = signupSerializer(userMainModel, many = False)
+                return Response(serializer.data)
+        return Response({"message" : "no users yet"})
     def post(self, request):
-        user_first_name = request.data.get("first_name", "").upper().strip()
-        user_surname = request.data.get("surname", "").upper().strip()
+        user_first_name = request.data.get("first_name").upper().strip()
+        user_surname = request.data.get("surname").upper().strip()
         user_email = request.data.get("email", "").upper().strip()
-        user_year_of_birth  = request.data.get('year_of_birth').strip()
-        user_month_of_birth = request.data.get("month_of_birth").strip()
-        user_date_of_birth = request.data.get("date_of_birth").strip()
-        user_university = request.data.get("university_name", "").upper().strip()
-        user_dept = request.data.get("dept", "").upper().strip()
+        user_year_of_birth  = request.data.get('yearOfBirth')
+        user_month_of_birth = request.data.get("monthOfBirth", "").upper().strip()
+        user_date_of_birth = request.data.get("dateOfBirth")
+        user_university = request.data.get("Universities_name", "").upper().strip()
+        user_dept = request.data.get("dept_name", "").upper().strip()
         user_level = request.data.get("level", "").upper().strip()
         try:
             user_password = request.data['password']
         except Exception as e:
             return Response(status= 400)#400 mean i heard you but i no fit do wetin u want make i do ; bad request
         try:
-            if_email_already_in_db = signupData.objects.get(user__username = user_email)
+            if_email_already_in_db = SignUpData.objects.get(user__username = user_email)
         except:
             if_email_already_in_db = None
 
         if len(user_email) > 0 and if_email_already_in_db == None:#all verification that the data is genuine have been done, about to update db
-            userAuthObject = myUsers.objects.create_user(username= user_email, email=user_email, password = myUsers.set_password(user_password))
-            customUserObject = UserCustomData.objects.create()
-            serializer_custom= signupSerializer(customUserObject, many = False)
-            serializer_auth = UserSerializer(serializer_auth, many = False)
-            
-            return Response({"message" : "success"})
+            serializer = signupSerializer(data = {
+                "yearOfBirth" : user_year_of_birth,
+                "monthOfBirth" : user_month_of_birth,
+                "dateOfBirth" : user_date_of_birth,
+                "Universities_name" : user_university,
+                "dept_name" : user_dept,
+                "level" : user_level,
+            })
+            if serializer.is_valid():
+                userAuthObject = myUsers.objects.create_user(first_name = user_first_name,last_name = user_surname,username= user_email, email=user_email, password = user_password)
+                serializer.save(user = userAuthObject)
+                return Response({"message" : "success", "data" : [serializer.data]})
+            else:
+                return Response({"message" : "Serializer not valid", "error" : serializer.errors})
         elif if_email_already_in_db != None:
             return Response({"message" : "email already exist"})
         else:

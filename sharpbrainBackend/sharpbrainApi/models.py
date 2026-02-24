@@ -22,7 +22,7 @@ class JambAcceptedSubjectCombination(models.Model):
         return "JambAcceptedSubjectCombination"
 
 
-class signupData(models.Model):
+class SignUpData(models.Model):
     user = models.OneToOneField(User, on_delete= models.CASCADE)#THIS IS TO LINK THE DATA IN USER TO MY CUSTOM USER 
     yearOfBirth = models.PositiveSmallIntegerField(blank= False, null= False)
     monthOfBirth = models.CharField(blank= False, null= False, max_length= 15)

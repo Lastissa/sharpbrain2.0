@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Universities_name, CourseNames, JambAcceptedSubjectCombination, signupData
+from .models import Universities_name, CourseNames, JambAcceptedSubjectCombination, SignUpData
 from django.contrib.auth.models import User
 
 
@@ -41,11 +41,12 @@ class UserSerializer(ModelSerializer):
     
 class signupSerializer(ModelSerializer):
     class Meta:
-        model = signupData
+        model = SignUpData
         fields = "__all__"
+        read_only_fields = ['user'] # i did this to stop django from shouting to my face say i have not put the user in the view as i need to confirm other feilds are valid before putting it
         
     def create(self, validated_data):
-         return super().create() # return signunupdata.objects.create(**validated data)
+         return SignUpData.objects.create(**validated_data) #return super().create()
          
         
         
