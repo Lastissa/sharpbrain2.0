@@ -1,64 +1,28 @@
-from django.http import JsonResponse
+import django
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
 from .serializers import *
-from .models import SignUp, Universities_name, CourseNames
+from .models import Universities_name, CourseNames
 from google import genai
 from dotenv import load_dotenv
 from pathlib import Path
 import os
+import random
+from django.core.mail import send_mail
+from django.contrib.auth.models import User as myUsers
+
 env_location = Path(__file__).resolve().parent.parent
 load_dotenv(env_location/'.env')
 api_key = os.getenv('API_KEY').strip()
 
 
-@api_view(['GET'])
-def show_data(request):
-    signupObj = SignUp.objects.all()
-    serializer = SignupSerializers(signupObj, many = True)
-    return Response(serializer.data)
+"""
+I WANT TO TURN ALL MY VIEWS TO CLASS BASED BUT JUST TO I REMEMBER WHAT FUNCTION BASED IS,
+I WILL LEAVE UNIVERSITIES NAEM AS FUNCTION BASED VIEW BUT TURN THE REST TO CLASS BASED VIEW AS FUNCTION BASED IS MAKING MY CODE LOOK DIRTY
+BUT OMO, THIS THING GO FAR, I WILL DO THE TASK LATER
+"""
 
-
-
-# @api_view(['GET'])
-# def data(request, pk):
-#     objects = SignUp.objects.get(id = pk)
-#     serializer = SignupSerializers(objects)
-#     return Response(serializer.data)
-
-# @api_view(['POST'])
-# def create(request):
-#     toCreate = request.data
-#     objects = SignUp.objects.create(
-#         surname = toCreate['surname']
-#     )
-#     serializer = SignupSerializers(objects, many = False)
-#     return Response(serializer.data)
-
-
-# @api_view(['PUT'])
-# def update(request, pk):
-#     inFoToUpdate = request.data
-#     objects = SignUp.objects.get(id = pk)
-#     serializer = SignupSerializers(objects, data = inFoToUpdate)
-#     if serializer.is_valid():
-#         serializer.save()
-#     return Response(serializer.data)
-
-
-# @api_view(['DELETE'])
-# def delete (request, pk):
-#     if pk == '*':
-#         SignUp.objects.all().delete()
-#         return Response('Everything have been deleted')
-#     else:
-#         objects = SignUp.objects.get(id = pk)
-#         objects.delete()
-#         return Response(f'{pk} have been deleted')
-    
-    
-    
 @api_view(['POST', 'GET',])
 def universities_name(request):
     if request.method == 'POST':
@@ -164,10 +128,6 @@ def aichat(request):
     ai_name = data_from_request.get('ai_name', '')
     history = data_from_request.get('history','')
     
-    # print(f"Received message: {message}")
-    # print(f"Received AI name: {ai_name}")
-    # print(f"Received history: {history}")
-    
     if ai_name is None or ai_name.strip() == '':
         ai_name = 'Tis'
     
@@ -223,3 +183,127 @@ user's question: {message}
         "token_count" : 0
     })
   
+@api_view(['POST'])
+def otp(request):
+    try:
+        email = request.data.get('email', '')
+        surName = request.data['surname']
+        firstName = request.data['firstname']
+        otp = random.randint(10000,99999)
+        # cache.set(email, otp, timeout=400)  # Store OTP in cache for 5 minutes
+        send_mail(
+        'Your OTP Code From SharpBrain',
+        f"""Dear {surName.upper()} {firstName.upper()}, your otp code is {otp}, it expires in 5 minutes\nIf you wan dare me let that five minute pass.
+if the name does not match your name, just ignore this mail, Thank you.
+""",
+        django.conf.settings.DEFAULT_FROM_EMAIL,
+        [email])
+        return Response({'message': 'OTP sent to email.',
+                         'otp': otp})
+    except Exception as e:
+        return Response({'message': f'Failed to send OTP: {str(e)}', 'otp': 0}, )
+
+#for default auth django provides # built only for login, custom user account for signup and probably other features
+@api_view(['POST', 'GET','PUT', 'DELETE', 'PATCH'])
+def userAuth(request):
+    if request.method == 'GET':
+        try:
+            typed_email = 'LASTISSA11@GMAIL.COM'#request.data.get('email', '')
+            typed_password = 'Realmadrid123'#request.data.get('password', '')
+            if typed_email and typed_password:
+                objects = myUsers.objects.get(username = typed_email.upper())
+                if objects.check_password(typed_password):
+                    serializer = UserSerializer(objects, many = False)
+                    return Response({'message' : 'success', 'id' : str(serializer.data['username'])})
+            return Response({'message' : 'email and password is required'})
+        except Exception as e:
+            return Response({
+                'message' : f'{e}'
+            })
+            
+    if request.method == 'POST':
+        user_email = request.data['email']
+        firstName = request.data['firstName']
+        surName = request.data['surName']
+        password = request.data['password']
+        objects = myUsers.objects.create_user(
+            username = user_email.upper(),
+            first_name = firstName.upper(),
+            last_name = surName.upper(),
+            email = user_email.upper(),
+            password = password
+        )#this could have been replaced by the serializer.save() as it calls the update / create automatically depending of wether my serilizer have data or not
+        serializer = UserSerializer(objects, many = False)
+        return Response(serializer.data)
+    
+    if request.method == 'PATCH':
+        user_email = request.data.get('email', '').upper()
+        rowToUpdate = myUsers.objects.get(username = user_email) #since email is same as username
+        serializer = UserSerializer(rowToUpdate, data = request.data, partial = True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message' : 'success, password updated succcesfuly'})
+        
+        return Response({'message' : 'Password not updated'})
+    
+    if request.method == 'DELETE':
+        user_email = request.data.get('email')
+        password = request.data.get('password')
+        if user_email:
+            rowToDelete = User.objects.get(username = user_email.upper())
+            if rowToDelete.check_password(password):
+                rowToDelete.delete()
+                return Response({'message' : 'Account Deleted'})
+        return Response({'message' : 'incorrect  credentials, failed to delete'})
+        
+
+@api_view(['GET'])
+def viewAllUser(request):
+    objects = myUsers.objects.all()
+    serializer = UserSerializer(objects, many = True)
+    return Response(serializer.data)
+
+
+#for other feilds i need to save during registration that django does not provide
+class UserCustomData(APIView):
+    def get(self, request):
+        user_email = request.data.get("email", "").upper()
+        password = request.data.get("password")
+        userMainModel = signupData.objects.get(user__username = user_email)
+        if signupData.user.check_password(password):
+            serializer = UserSerializer(userMainModel, many = False)
+            return Response(serializer.data)
+    
+    def post(self, request):
+        user_first_name = request.data.get("first_name", "").upper().strip()
+        user_surname = request.data.get("surname", "").upper().strip()
+        user_email = request.data.get("email", "").upper().strip()
+        user_year_of_birth  = request.data.get('year_of_birth').strip()
+        user_month_of_birth = request.data.get("month_of_birth").strip()
+        user_date_of_birth = request.data.get("date_of_birth").strip()
+        user_university = request.data.get("university_name", "").upper().strip()
+        user_dept = request.data.get("dept", "").upper().strip()
+        user_level = request.data.get("level", "").upper().strip()
+        try:
+            user_password = request.data['password']
+        except Exception as e:
+            return Response(status= 400)#400 mean i heard you but i no fit do wetin u want make i do ; bad request
+        try:
+            if_email_already_in_db = signupData.objects.get(user__username = user_email)
+        except:
+            if_email_already_in_db = None
+
+        if len(user_email) > 0 and if_email_already_in_db == None:#all verification that the data is genuine have been done, about to update db
+            userAuthObject = myUsers.objects.create_user(username= user_email, email=user_email, password = myUsers.set_password(user_password))
+            customUserObject = UserCustomData.objects.create()
+            serializer_custom= signupSerializer(customUserObject, many = False)
+            serializer_auth = UserSerializer(serializer_auth, many = False)
+            
+            return Response({"message" : "success"})
+        elif if_email_already_in_db != None:
+            return Response({"message" : "email already exist"})
+        else:
+            return Response({"message" : "error uploading"})
+        
+        
+        

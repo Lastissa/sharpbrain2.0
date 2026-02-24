@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'sharpbrainApi',
     'rest_framework' ,
-    "corsheaders",
+    "corsheaders", 
+    
 ]
 
 MIDDLEWARE = [
@@ -96,8 +97,10 @@ DATABASES = {
     'NAME': os.getenv('DB_NAME'),
     'CONN_MAX_AGE' : 600,
     'OPTIONS' : {
-        'sslmode': 'require'
-    }}}
+        'sslmode': 'require',
+        'prepare_threshold' : None #since i am using 6543 as my superbase port, i need to stop django from holding unto data each time and force it to just send data and disappear
+    }}
+    }
         
     # 'default': {
     #     'ENGINE': 'django.db.backends.sqlite3',
@@ -143,3 +146,12 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'lastissa11@gmail.com'
+EMAIL_HOST_PASSWORD = os.getenv('GMAIL_PASSWORD')
+DEFAULT_FROM_EMAIL = 'lastissa11@gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
