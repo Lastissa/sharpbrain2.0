@@ -26,7 +26,7 @@ BUT OMO, THIS THING GO FAR, I WILL DO THE TASK LATER
 @api_view(['POST', 'GET',])
 def universities_name(request):
     if request.method == 'POST':
-        dataToUpload = request.data.get('name_of_universities', '').lower().strip()# Used the empty string incase django did not get uni names and it cannot return the nonetype.lowercase
+        dataToUpload = request.data.get('name_of_universities', '').upper().strip()# Used the empty string incase django did not get uni names and it cannot return the nonetype.lowercase
         objects = Universities_name.objects.create(
             name_of_universities = dataToUpload
         )
@@ -36,9 +36,7 @@ def universities_name(request):
         objects = Universities_name.objects.all()
         serializer = universitiesNameSerializer(objects, many = True)
         return Response(serializer.data)
-    elif request.method == 'DELETE':
-        objects = Universities_name.objects
-        
+    
 @api_view(['DELETE', 'PUT'])
 def   universities_nameDelPut(request, pk):
        if request.method == 'DELETE':
@@ -189,6 +187,17 @@ def otp(request):
         email = request.data.get('email', '')
         surName = request.data['surname']
         firstName = request.data['firstname']
+        userExist = SignUpData.objects.filter(user__username = email.upper()).exists()
+        if userExist:
+            send_mail("Welcome Back SharpBrainer", f"""
+This email is already been used by another sharpbrainer, please change email or proceed to login if you are the owner of this email""",
+django.conf.settings.DEFAULT_FROM_EMAIL,
+[email]
+)
+            return Response({
+                "message" : "Email Already In Use",
+                "otp" : random.randint(1234567, 12345678)
+            })
         otp = random.randint(10000,99999)
         # cache.set(email, otp, timeout=400)  # Store OTP in cache for 5 minutes
         send_mail(
@@ -263,18 +272,22 @@ def viewAllUser(request):
     serializer = UserSerializer(objects, many = True)
     return Response(serializer.data)
 
+# @api_view(["GET"])
+# def userExist
+
 
 #for other feilds i need to save during registration that django does not provide
 class UserCustomData(APIView):
     def get(self, request):
-        user_email = request.data.get("email", "").upper()
-        password = request.data.get("password")
+        user_email = request.query_params.get("email", "").upper()
+        password = request.query_params.get("password")
         userMainModel = SignUpData.objects.filter(user__username = user_email).first()#Could have used a try or except but this is the best appraoch as per it returns none, and the .first() literally mean ut should return the first item it find with the said data
         if userMainModel:
             if userMainModel.user.check_password(password):
                 serializer = signupSerializer(userMainModel, many = False)
-                return Response(serializer.data)
-        return Response({"message" : "no users yet"})
+                return Response({"message" : "success"})
+            return Response({"message": "wrong password"})
+        return Response({"message" : "no user"})
     def post(self, request):
         user_first_name = request.data.get("first_name").upper().strip()
         user_surname = request.data.get("surname").upper().strip()
