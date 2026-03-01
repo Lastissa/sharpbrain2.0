@@ -95,7 +95,7 @@ DATABASES = {
     'USER': os.getenv('USER'),
     'PASSWORD': os.getenv('PASSWORD'),
     'NAME': os.getenv('DB_NAME'),
-    'CONN_MAX_AGE' : 600,
+    'CONN_MAX_AGE' : 0,
     'OPTIONS' : {
         'sslmode': 'require',
         'prepare_threshold' : None #since i am using 6543 as my superbase port, i need to stop django from holding unto data each time and force it to just send data and disappear

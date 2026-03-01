@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import *
-from .models import Universities_name, CourseNames, SignUpData
+from .models import Universities_name, CourseNames, SignUpData, Materials, CoursesForEachDept
 from google import genai
 from dotenv import load_dotenv
 from pathlib import Path
@@ -11,6 +11,7 @@ import os
 import random
 from django.core.mail import send_mail
 from django.contrib.auth.models import User as myUsers
+from django.http import FileResponse
 
 env_location = Path(__file__).resolve().parent.parent
 load_dotenv(env_location/'.env')
@@ -281,11 +282,13 @@ class UserCustomData(APIView):
     def get(self, request):
         user_email = request.query_params.get("email", "").upper()
         password = request.query_params.get("password")
-        userMainModel = SignUpData.objects.filter(user__username = user_email).first()#Could have used a try or except but this is the best appraoch as per it returns none, and the .first() literally mean ut should return the first item it find with the said data
+        userMainModel = SignUpData.objects.get(user__username = user_email)#Could have used a try or except but this is the best appraoch as per it returns none, and the .first() literally mean ut should return the first item it find with the said data
         if userMainModel:
             if userMainModel.user.check_password(password):
                 serializer = signupSerializer(userMainModel, many = False)
-                return Response({"message" : "success"})
+                secondObject= User.objects.get(id = int(userMainModel.user.id))
+                secondSerializer = UserSerializer(secondObject, many = False)
+                return Response({"message" : "success", **serializer.data, **secondSerializer.data})
             return Response({"message": "wrong password"})
         return Response({"message" : "no user"})
     def post(self, request):
@@ -328,4 +331,65 @@ class UserCustomData(APIView):
             return Response({"message" : "error uploading"})
         
         
+        
+
+@api_view(["POST",'GET'])
+def material(request):
+    if request.method == "GET":#return three things : (1) -> file_name(if file foes not exiat, return file_name as no_file)
+        file_name = request.data.get("file_name", "").upper()
+        if_file_exist = Materials.objects.filter(file_name = file_name).exists()
+        if len(file_name) > 1 and if_file_exist:
+            object = Materials.objects.get(file_name = file_name)
+            serializer = MaterialSerializer(object, many = False)
+            return Response(serializer.data) #FileResponse() #Does not really understand how the file response work, come back later to solve
+        
+        return Response({"file_name" : "invalid", "file_data" : None, "file_type" : None})
+    elif request.method == "POST":
+        file_name = request.data.get("file_name").upper()
+        file_type = request.data.get("file_type").upper()
+        file_data = request.data.get("file_data")
+        serializer = MaterialSerializer(data = request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(
+           serializer.errors
+        )
+        
+        
+        
+class Courses_for_each_dept_view(APIView):
+    def post(self, request):
+        try:
+            dept_name = request.data.get("dept_name", "").upper().strip()
+            uni_name =  request.data.get("uni_name", "").upper().strip()
+            first_semester_courses =  request.data.get("first_semester_courses")
+            second_semester_courses =  request.data.get("second_semester_courses")
+            try:
+                dataExist = CoursesForEachDept.objects.get(uni_name = uni_name, dept_name = dept_name)
+                dataExist = False
+                return Response({"message" : "data exist"})
+            except:
+                objects = CoursesForEachDept.objects.create(uni_name = uni_name, dept_name = dept_name, first_semester_courses =first_semester_courses, second_semester_courses = second_semester_courses)
+                serializer = CoursesForEachDeptSeriaizer(objects, many = False)
+                return Response(serializer.data)
+            
+            
+        except Exception as e:
+            return Response({"message" : str(e)})
+        
+
+           
+    def get(self, request):
+        dept_name_ =request.query_params["dept_name"]
+        uni_name_ =request.query_params["uni_name"]
+        try:
+            objects = CoursesForEachDept.objects.get(uni_name = uni_name_.strip().upper(), dept_name =dept_name_.strip().upper())
+            serializer = CoursesForEachDeptSeriaizer(objects, many = False)
+            return Response({"message" : "successful", **serializer.data})
+        except Exception as e:
+           
+            return Response({"message": f"{e}"})
+       
         

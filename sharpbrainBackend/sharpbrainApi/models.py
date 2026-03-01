@@ -33,3 +33,20 @@ class SignUpData(models.Model):
     
     def __str__(self):
         return "signupData"
+    
+class Materials(models.Model):#this model can take in any kind of file but the file format should always be either pdf or msword file
+    file_name = models.CharField(max_length= 200, blank= False, null= False, unique= True)# Name that the file will be saved as in my own case , flutter will save it as this
+    file_data = models.BinaryField()#Container for the raw binary of the pdf/word, used the open method to convert the normal file to binary
+    file_type = models.CharField(max_length=100, blank= False, null= False, )#The type of file it is ; Two option only ? pdf or word.
+    
+    def __str__(self):
+         return "materials"
+     
+     
+class CoursesForEachDept(models.Model):
+    dept_name = models.CharField(max_length= 150, blank= False, null= False)
+    uni_name = models.CharField(max_length= 150, blank= False, null= False)
+    first_semester_courses = models.JSONField(default= list)
+    second_semester_courses = models.JSONField(default= list)
+
+    

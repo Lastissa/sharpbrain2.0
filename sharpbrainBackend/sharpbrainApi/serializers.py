@@ -1,5 +1,6 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Universities_name, CourseNames, JambAcceptedSubjectCombination, SignUpData
+from rest_framework import serializers
+from .models import Universities_name, CourseNames, JambAcceptedSubjectCombination, SignUpData, Materials, CoursesForEachDept
 from django.contrib.auth.models import User
 
 
@@ -26,7 +27,7 @@ class JambAcceptedSubjectCombinationSerializer(ModelSerializer):
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'#u can use list if you dont want all
+        fields = ["first_name", "last_name", "email"]#'__all__'#u can use list if you dont want all
         
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
@@ -47,6 +48,27 @@ class signupSerializer(ModelSerializer):
         
     def create(self, validated_data):
          return SignUpData.objects.create(**validated_data) #return super().create()
+     
+    
+    
+    
+class MaterialSerializer(ModelSerializer):
+    class Meta:
+        file_data = serializers.FileField(read_only = True)
+        model = Materials
+        fields = "__all__"#["file_name", "file_type", "file_data"]
+        
+        
+    def create(self, validated_data):
+        return Materials.objects.create(**validated_data)
          
         
+class CoursesForEachDeptSeriaizer(ModelSerializer):
+    class Meta:
+        model = CoursesForEachDept
+        fields = "__all__"
         
+    def __str__(self):
+        return "courseForEachDepertment"
+        
+    

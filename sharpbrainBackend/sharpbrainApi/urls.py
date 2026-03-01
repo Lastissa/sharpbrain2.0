@@ -8,6 +8,8 @@ urlpatterns = [
     path('course_names/', views.coursesOffered),
     path('jamb_subject_combination/', views.jambAcceptedSubjects),
     path('signup/', views.UserCustomData.as_view()),
+    path("material/", views.material),
+    path("courses_for_each_dept/", views.Courses_for_each_dept_view.as_view()),
     
     path('users/', views.userAuth),
     path('users/all', views.viewAllUser),
