@@ -10,6 +10,8 @@ urlpatterns = [
     path('signup/', views.UserCustomData.as_view()),
     path("material/", views.material),
     path("courses_for_each_dept/", views.Courses_for_each_dept_view.as_view()),
+    path("password_check/", views.passwordCheck),
+    path("email_check/", views.emailCheck),
     
     path('users/', views.userAuth),
     path('users/all', views.viewAllUser),

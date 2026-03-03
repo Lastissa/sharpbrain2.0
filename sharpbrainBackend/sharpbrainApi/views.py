@@ -185,13 +185,15 @@ user's question: {message}
 @api_view(['POST'])
 def otp(request):
     try:
-        email = request.data.get('email', '')
+        email = request.data["email"]
         surName = request.data['surname']
         firstName = request.data['firstname']
         userExist = SignUpData.objects.filter(user__username = email.upper()).exists()
         if userExist:
             send_mail("Welcome Back SharpBrainer", f"""
-This email is already been used by another sharpbrainer, please change email or proceed to login if you are the owner of this email""",
+This email is already been used by another sharpbrainer, please change email or proceed to login if you are the owner of this email
+Please disregard this email if you did not signup on the sharpbrain app.
+""",
 django.conf.settings.DEFAULT_FROM_EMAIL,
 [email]
 )
@@ -392,4 +394,23 @@ class Courses_for_each_dept_view(APIView):
            
             return Response({"message": f"{e}"})
        
+@api_view(["GET"])
+def passwordCheck(request):
+    try:
+        email = request.query_params["email"]
+        password = request.query_params["password"]
+        object = User.objects.get(username = email.upper())
+        if object.check_password(password):
+            return Response({"message": "correct"})
+        return Response({"message" : "incorrect"})
+    except Exception as e:
+        return Response({"message" : f"{e}"})
+    
+    
+@api_view(["GET"])
+def emailCheck(request):
+    email = request.query_params["email"]
+    object = User.objects.filter(username = email.upper()).exists()
+    return Response({"message" : str(object)})
         
+    
