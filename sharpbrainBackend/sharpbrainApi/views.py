@@ -414,3 +414,23 @@ def emailCheck(request):
     return Response({"message" : str(object)})
         
     
+@api_view(["PATCH"])
+def updateUserName(request):
+    oldEmailToUserName = request.data["old_email"]
+    newEmailToUserName = request.data["new_email"]
+    #Check if the new email exist first
+    newEmailExists = myUsers.objects.filter(username = newEmailToUserName.upper()).exists()
+    if newEmailExists:
+        return Response({"message" : "email exist"})
+    #Check if the old email even exist to begin with
+    oldEmailExists = myUsers.objects.filter(username = oldEmailToUserName.upper()).exists()
+    if oldEmailExists:
+        objects = myUsers.objects.get(username = oldEmailToUserName.upper())
+        serializer = UserSerializer(objects, data = {"email" : newEmailToUserName.upper(), "username" : newEmailToUserName.upper()}, partial = True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message" : "success"})
+        return Response({"message" : "Something went wrong", "e" : serializer.errors})
+    return Response({"message" : "old_email does not exist"})
+
+    

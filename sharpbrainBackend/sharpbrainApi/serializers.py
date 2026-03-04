@@ -27,13 +27,14 @@ class JambAcceptedSubjectCombinationSerializer(ModelSerializer):
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email"]#'__all__'#u can use list if you dont want all
+        fields = ["first_name", "last_name", "email", "username"]#'__all__'#u can use list if you dont want all, also added the username cos if it is not there, the username update will not happen
         
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
         if password:
             instance.set_password(password)
-            return super().update(instance, validated_data)# this have called the instance.save() already
+        return super().update(instance, validated_data)# this have called the instance.save() already
+        
             
     # def create(self, validated_data):
     #     return super().create_user(**validated_data)
