@@ -14,6 +14,8 @@ urlpatterns = [
     path("email_check/", views.emailCheck),
     path("update_email/", views.updateUserName),
     path("update_firstname/", views.updateFirstName),
+    path("update_surname/", views.updateSurName),
+    
     
     
     path('users/', views.userAuth),
