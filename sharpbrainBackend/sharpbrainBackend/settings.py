@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'sharpbrainApi',
     'rest_framework' ,
     "corsheaders", 
+    "rest_framework_simplejwt"
     
 ]
 
@@ -154,3 +155,8 @@ EMAIL_HOST_USER = 'lastissa11@gmail.com'
 EMAIL_HOST_PASSWORD = os.getenv('GMAIL_PASSWORD')
 DEFAULT_FROM_EMAIL = 'lastissa11@gmail.com'
 EMAIL_PORT = 465
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES" : ["rest_framework_simplejwt.authentication.JWTAuthentication"]
+}

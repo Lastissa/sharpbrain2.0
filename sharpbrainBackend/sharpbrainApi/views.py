@@ -1,4 +1,4 @@
-import django
+# import django
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -433,4 +433,48 @@ def updateUserName(request):
         return Response({"message" : "Something went wrong", "e" : serializer.errors})
     return Response({"message" : "old_email does not exist"})
 
+
+@api_view(["PATCH"])
+def updateFirstName(request):
+    newfirstName = request.data["new_first_name"]
+    email = request.data["email"]
+    password = request.data["password"]
+    emailExist = User.objects.filter(username = email.upper()).exists()
+    if emailExist:
+        objects = User.objects.get(username = email.upper())
+        checkPassword = objects.check_password(password)
+        serializer = UserSerializer(objects, data = {"first_name" : newfirstName.upper()}, partial = True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message" : "success", "e": f"{checkPassword}"})
+        return Response ({"message" : serializer.errors})
+    else:
+        return Response({"message" : "no user"})
     
+
+# @api_view(["PATCH"])
+# def updateSurName(request):
+#     newsurName = request.data["new_sur_name"]
+#     email = request.data["email"]
+#     password = request.data["password"]
+#     emailCheck = User.objects.filter(username = email.upper())
+#     if emailCheck:
+#         objects = User.objects.get(username = email.upper())
+#         serializer = UserSerializer(objects, data = newsurName.upper(), partial = True)
+#         if serializer.is_valid():
+#             serializer.save()
+#         return {"message" : serializer.error}
+#     return Response({"message" : "no user"})
+
+
+@api_view(["PATCH"])
+def updateLevel(request):
+    pass
+
+@api_view(["PATCH"])
+def updateUniName(request):
+    pass
+
+@api_view(["PATCH"])
+def updateDept(request):
+    pass

@@ -13,6 +13,8 @@ urlpatterns = [
     path("password_check/", views.passwordCheck),
     path("email_check/", views.emailCheck),
     path("update_email/", views.updateUserName),
+    path("update_firstname/", views.updateFirstName),
+    
     
     path('users/', views.userAuth),
     path('users/all', views.viewAllUser),
