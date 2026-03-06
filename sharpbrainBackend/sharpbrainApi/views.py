@@ -131,11 +131,13 @@ ai = genai.Client(api_key= api_key)
 def aichat(request):
     data_from_request = request.data
     message = data_from_request.get('message', '')
-    ai_name = data_from_request.get('ai_name', '')
+    ai_name = data_from_request.get('ai_name', '')#Not cumpulsary
     history = data_from_request.get('history','')
     
     if ai_name is None or ai_name.strip() == '':
         ai_name = 'Tis'
+    if history is None or history.strip() == '':
+        history = ""
     
     
     try:
