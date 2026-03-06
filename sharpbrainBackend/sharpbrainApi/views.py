@@ -11,7 +11,7 @@ import os
 import random
 from django.core.mail import send_mail
 from django.contrib.auth.models import User as myUsers
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse
 
 env_location = Path(__file__).resolve().parent.parent
 load_dotenv(env_location/'.env')
@@ -23,6 +23,13 @@ I WANT TO TURN ALL MY VIEWS TO CLASS BASED BUT JUST TO I REMEMBER WHAT FUNCTION 
 I WILL LEAVE UNIVERSITIES NAEM AS FUNCTION BASED VIEW BUT TURN THE REST TO CLASS BASED VIEW AS FUNCTION BASED IS MAKING MY CODE LOOK DIRTY
 BUT OMO, THIS THING GO FAR, I WILL DO THE TASK LATER
 """
+
+class Home(APIView):
+    def get(self,request):
+        return HttpResponse(
+            """this is the home for the sharpbrain2.0 project by devOpe
+and below are the current available endpoint and usage"""
+        )
 
 @api_view(['POST', 'GET',])
 def universities_name(request):
