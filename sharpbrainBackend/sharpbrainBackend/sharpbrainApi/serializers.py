@@ -1,0 +1,75 @@
+from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
+from .models import Universities_name, CourseNames, JambAcceptedSubjectCombination, SignUpData, Materials, CoursesForEachDept
+from django.contrib.auth.models import User
+
+
+
+class universitiesNameSerializer(ModelSerializer):
+    class Meta:
+        model  = Universities_name
+        fields = '__all__'
+        
+        
+class CourseNameSerializer(ModelSerializer):
+    class Meta:
+        model = CourseNames
+        fields = '__all__'
+        
+        
+class JambAcceptedSubjectCombinationSerializer(ModelSerializer):
+    class Meta:
+        model  = JambAcceptedSubjectCombination
+        fields = '__all__'
+        
+        
+        
+class UserSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "email", "username"]#'__all__'#u can use list if you dont want all, also added the username cos if it is not there, the username update will not happen
+        
+    def update(self, instance, validated_data):
+        # password = validated_data.pop('password', None)
+        # if password:
+        #     instance.set_password(password)
+        return super().update(instance, validated_data)# this have called the instance.save() already
+        
+            
+    # def create(self, validated_data):
+    #     return super().create_user(**validated_data)
+    #i choose not to use the create function cos some of my data have to be in uppercase so i will write them manually myself
+    
+    
+class signupSerializer(ModelSerializer):
+    class Meta:
+        model = SignUpData
+        fields = "__all__"
+        read_only_fields = ['user'] # i did this to stop django from shouting to my face say i have not put the user in the view as i need to confirm other feilds are valid before putting it
+        
+    def create(self, validated_data):
+         return SignUpData.objects.create(**validated_data) #return super().create()
+     
+    
+    
+    
+class MaterialSerializer(ModelSerializer):
+    class Meta:
+        file_data = serializers.FileField(read_only = True)
+        model = Materials
+        fields = "__all__"#["file_name", "file_type", "file_data"]
+        
+        
+    def create(self, validated_data):
+        return Materials.objects.create(**validated_data)
+         
+        
+class CoursesForEachDeptSeriaizer(ModelSerializer):
+    class Meta:
+        model = CoursesForEachDept
+        fields = "__all__"
+        
+    def __str__(self):
+        return "courseForEachDepertment"
+        
+    

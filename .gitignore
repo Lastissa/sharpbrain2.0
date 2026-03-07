@@ -1,3 +1,10 @@
+#This are from my laptop
 /.venv
 sharpbrainBackend/.env
 **/.env
+
+#This are from pythoneverwhere
+.cache/
+.ipython/
+.local/
+.virtualenvs/
