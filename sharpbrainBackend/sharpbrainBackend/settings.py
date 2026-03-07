@@ -80,10 +80,10 @@ WSGI_APPLICATION = 'sharpbrainBackend.wsgi.application'
 
 DATABASES = {
     'default' : {'ENGINE': 'django.db.backends.postgresql',
-    'HOST': os.getenv('HOST'),
-    'PORT': os.getenv('PORT'),
-    'USER': os.getenv('USER'),
-    'PASSWORD': os.getenv('PASSWORD'),
+    'HOST': os.getenv('DB_HOST'),
+    'PORT': os.getenv('DB_PORT'),
+    'USER': os.getenv('DB_USER'),
+    'PASSWORD': os.getenv('DB_PASSWORD'),
     'NAME': os.getenv('DB_NAME'),
     'CONN_MAX_AGE' : 0,
     'OPTIONS' : {
