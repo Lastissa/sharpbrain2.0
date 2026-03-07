@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!&@!@@o9vh-iby*_q!e6yn4l4^s+4@q8e5r_oogq-my!-g9xrs'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['las.pythonanywhere.com', "127.0.0.1"]
 
@@ -44,14 +44,15 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',#from whitenoise library ; this is for render setup to avoid issue in the future about static files, though i neva dey use em but django itself have some already
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "corsheaders.middleware.CorsMiddleware",#from coresheader import
-    "django.middleware.common.CommonMiddleware",#from coresheader import
+    "corsheaders.middleware.CorsMiddleware",#from coresheader library ; the boss Cross Origin Resource Sharing
+    "django.middleware.common.CommonMiddleware",#from coresheader library ; the boss Cross Origin Resource Sharing
 ]
 
 ROOT_URLCONF = 'sharpbrainBackend.urls'
@@ -145,6 +146,15 @@ DEFAULT_FROM_EMAIL = 'lastissa11@gmail.com'
 EMAIL_PORT = 465
 
 
+#even though i do not understand this yet, it is for handling all the html, css and js on my proj, i do not ue those noe but django uses em , i had to do this cos of the whitenoise module i imported
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES" : ["rest_framework_simplejwt.authentication.JWTAuthentication"]
 }
+
+
+
+#i used this for the render build command prompt istead of just using the pip install -r req....
+#pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --no-input
