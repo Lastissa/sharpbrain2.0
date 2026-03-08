@@ -2,10 +2,11 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("", views.Home.as_view()),
+    path("", views.HomeDir.as_view()),
+    path("api_doc/", views.ApiView.as_view()),
     
-    path('otp/', views.otp),
     path('universities_name/', views.universities_name),
+    path('otp/', views.otp),
     path('course_names/', views.coursesOffered),
     path('jamb_subject_combination/', views.jambAcceptedSubjects),
     path('signup/', views.UserCustomData.as_view()),

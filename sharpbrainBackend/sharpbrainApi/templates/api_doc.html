@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SharpBrain 2.0 API Docs</title>
+    <style>
+        body { font-family: monospace; background: #fafafa; color: #333; padding: 40px; line-height: 1.5; }
+        .wrapper { max-width: 900px; margin: 0 auto; }
+        h1 { border-bottom: 2px solid #333; padding-bottom: 10px; font-size: 20px; }
+        .endpoint { background: #fff; border: 1px solid #ddd; padding: 20px; margin-bottom: 10px; }
+        .method { font-weight: bold; color: #005cc5; margin-right: 10px; }
+        .url { color: #d73a49; font-weight: bold; }
+        .label { color: #6a737d; font-size: 12px; text-transform: uppercase; margin-top: 10px; display: block; }
+        table { width: 100%; margin-top: 10px; border-collapse: collapse; }
+        td { padding: 5px; border-bottom: 1px dashed #eee; font-size: 13px; }
+        .crucial { color: red; }
+        .optional { color: green; }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <h1>SHARPBRAIN 2.0 API SYSTEM</h1>
+
+    <div id="api-content">
+        </div>
+</div>
+
+<script>
+    const BASE_URL = "https://sharpbrain.onrender.com"; 
+
+    const endpoints = [
+        { 
+            name: "Home", method: "GET", path: "/", 
+            data: "None", constr: "None", resp: "Plain Text" , info : "Home directory"
+        },
+        { 
+            name: "API Docs", method: "GET", path: "/api_doc/", 
+            data: "None", constr: "None", resp: "This HTML" , info : "Where you currently are, this page is key for understanding how my api works"
+        },
+        { 
+            name: "OTP", method: "POST", path: "/otp/", 
+            data: "Body", 
+            constr: "email, surname,firstname (CRUCIAL)", 
+            resp: "JSON {message, otp}" , info : "For sendind one time password to email, even though the smtp support multiple email, i am only allowing one "
+        },
+        { 
+            name: "UserCustomData", method: "POST", path: "/signup/", 
+            data: "Body", 
+            constr: "password (CRUCIAL), email, first_name, surname, dept_name (OPTIONAL)", 
+            resp: "JSON {message, data}" , info : "Empty"
+        },
+        { 
+            name: "AI Tutor Chat", method: "POST", path: "/aichat/", 
+            data: "Body", 
+            constr: "message, ai_name, history (OPTIONAL .get())", 
+            resp: "JSON {ai_response, token_count}" , info : "Empty"
+        },
+        { 
+            name: "University List", method: "GET/POST", path: "/universities_name/", 
+            data: "Body (if POST)", 
+            constr: "name_of_universities (OPTIONAL .get())", 
+            resp: "Serialized Uni Data" , info : "Empty"
+        },
+        { 
+            name: "Dept Courses", method: "GET", path: "/courses_for_each_dept/", 
+            data: "Query Params", 
+            constr: "[dept_name], [uni_name] (CRUCIAL)", 
+            resp: "JSON {successful, data}" , info : "Empty"
+        },
+        { 
+            name: "Material Fetch", method: "GET/POST", path: "/material/", 
+            data: "Body", 
+            constr: "file_name, file_type, file_data (OPTIONAL .get())", 
+            resp: "File Data / JSON" , info : "Empty"
+        },
+        { 
+            name: "Update Email", method: "PATCH", path: "/update_email/", 
+            data: "Body", 
+            constr: "[old_email], [new_email], [password] (CRUCIAL)", 
+            resp: "JSON {success}" , info : "Empty"
+        },
+        { 
+            name: "Password Check", method: "GET", path: "/password_check/", 
+            data: "Query Params", 
+            constr: "[email], [password] (CRUCIAL)", 
+            resp: "JSON {message}" , info : "Empty"
+        }
+    ];
+
+    const container = document.getElementById('api-content');
+
+    endpoints.forEach(ep => {
+        container.innerHTML += `
+            <div class="endpoint">
+                <h3>INFORMATION: ${ep.info}</h3>
+                <div><span class="method">${ep.method}</span> <span class="url">${BASE_URL}${ep.path}</span></div>
+                <span class="label">View Name</span> <strong>${ep.name}</strong>
+                <span class="label">Data Collection Mode : Request body or Request Query Params</span> ${ep.data}
+                <span class="label">Data Construction</span> <em>${ep.constr}</em>
+                <span class="label">View Response</span> ${ep.resp}
+                
+            </div>
+        `;
+    });
+</script>
+</body>
+</html>

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-!&@!@@o9vh-iby*_q!e6yn4l4^s+4@q8e5r_oogq-my!-g9xrs
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['sharpbrain2-0.onrender.com', "127.0.0.1"]
+ALLOWED_HOSTS = ['sharpbrain2-0.onrender.com', "127.0.0.1", "esta-sensate-unquickly.ngrok-free.dev"]
 
 # Application definition
 

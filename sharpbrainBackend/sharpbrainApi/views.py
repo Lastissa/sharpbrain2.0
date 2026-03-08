@@ -13,6 +13,7 @@ import random
 from django.core.mail import send_mail
 from django.contrib.auth.models import User as myUsers
 from django.http import FileResponse, HttpResponse
+from django.shortcuts import render
 
 env_location = Path(__file__).resolve().parent.parent
 load_dotenv(env_location/'.env')
@@ -25,12 +26,17 @@ I WILL LEAVE UNIVERSITIES NAEM AS FUNCTION BASED VIEW BUT TURN THE REST TO CLASS
 BUT OMO, THIS THING GO FAR, I WILL DO THE TASK LATER
 """
 
-class Home(APIView):
+class HomeDir(APIView):
     def get(self,request):
         return HttpResponse(
             """this is the home for the sharpbrain2.0 project by devOpe
 and below are the current available endpoint and usage"""
         )
+        
+        
+class ApiView(APIView):
+    def get(self, request):
+        return render(request, "api_doc.html")
 
 @api_view(['POST', 'GET',])
 def universities_name(request):
@@ -294,11 +300,12 @@ class UserCustomData(APIView):
     def get(self, request):
         user_email = request.query_params.get("email", "").upper()
         password = request.query_params.get("password")
-        userMainModel = SignUpData.objects.get(user__username = user_email)#Could have used a try or except but this is the best appraoch as per it returns none, and the .first() literally mean ut should return the first item it find with the said data
+        userMainModel = SignUpData.objects.filter(user__username = user_email)#Could have used a try or except but this is the best appraoch as per it returns none, and the .first() literally mean it should return the first item it find with the said data
         if userMainModel:
-            if userMainModel.user.check_password(password):
-                serializer = signupSerializer(userMainModel, many = False)
-                secondObject= User.objects.get(id = int(userMainModel.user.id))
+            objects = SignUpData.objects.get(user__username = user_email)
+            if objects.user.check_password(password):
+                serializer = signupSerializer(objects, many = False)
+                secondObject= User.objects.get(id = int(objects.user.id))
                 secondSerializer = UserSerializer(secondObject, many = False)
                 return Response({"message" : "success", **serializer.data, **secondSerializer.data})
             return Response({"message": "wrong password"})
@@ -428,6 +435,8 @@ def emailCheck(request):
 def updateUserName(request):
     oldEmailToUserName = request.data["old_email"]
     newEmailToUserName = request.data["new_email"]
+    password = request.data["password"]
+    
     #Check if the new email exist first
     newEmailExists = myUsers.objects.filter(username = newEmailToUserName.upper()).exists()
     if newEmailExists:
@@ -436,6 +445,10 @@ def updateUserName(request):
     oldEmailExists = myUsers.objects.filter(username = oldEmailToUserName.upper()).exists()
     if oldEmailExists:
         objects = myUsers.objects.get(username = oldEmailToUserName.upper())
+        #Check for password
+        passwordCheck = objects.check_password(password)
+        if passwordCheck == False:
+            return Response({"message" : "incorrect password"})
         serializer = UserSerializer(objects, data = {"email" : newEmailToUserName.upper(), "username" : newEmailToUserName.upper()}, partial = True)
         if serializer.is_valid():
             serializer.save()
