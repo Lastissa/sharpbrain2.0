@@ -27,7 +27,7 @@
 </div>
 
 <script>
-    const BASE_URL = "https://sharpbrain2-0.onrender.com"; 
+    const BASE_URL = "https://esta-sensate-unquickly.ngrok-free.dev"; 
 
     const endpoints = [
         { 
@@ -41,19 +41,31 @@
         },
         {
             name: "Universities_name", method: "GET, POST", path: "/universities_name/",
-            data: " GET: None | POST: body ", constr: "GET: None | POST : name_of_universities (OPTIONAL)", resp: "JSON {id, name_of_universities}", info: "Update/Get the name of uni in Db"
+            data: " GET: None | POST: body ", constr: "GET: None | POST : {name_of_universities : ''} (OPTIONAL)", resp: "GET: A list of JSONs {id, name_of_universities} | POST: JSON {id, name_of_universities}", info: "Post/Get the name of uni in Db"
         },
         {
-            name: "Universities_nameDelPut", method: "PUT,DELETE", path: "/universities_name/{index}",
-            data: " DELETE: None | PUT: None ", constr: "DELETE: None | PUT : name_of_universities (CRUCIAL)", resp: "DELETE: JSON {'result' : 'id {index} have been deleted'} | PUT: JSON index, name_of_universities", info: "Delete/ Put the name of uni in Db"
+            name: "Universities_nameDelPut", method: "PUT,DELETE", path: "/universities_name/{index}/",
+            data: " DELETE: None | PUT: None ", constr: "DELETE: None | PUT : {name_of_universities: str} (CRUCIAL)", resp: "DELETE: JSON {result : id {index} have been deleted} | PUT: JSON {index, name_of_universities}", info: "Delete/ Put the name of uni in Db"
         },
         {
             name: "CoursesOffered", method: "GET, POST", path: "/course_names/",
-            data: "POST:BODY | GET: None", constr: "POST: | GET: none", resp: "", info: ""
+            data: "POST:BODY | GET: None", constr: "POST: {name_of_uni : '', courses_offered : []} CRUCIAL | GET: none", resp: "POST: JSON {id : int, name_of_uni : '', courses_offered : [] } | GET: A List of JSONs {id : int, name_of_uni : '', courses_offered : [] }", info: "UpdATE or Get available courses in a university"
         },
         {
+            name: 'CoursesOfferedDelPut',method: "PUT,DELETE",path: '/course_names/{index}/',
+            data: " DELETE: None | PUT: None " ,constr: "DELETE: None | PUT : {courses_offered: [], } (OPTIONAL) {name_of_uni: str} CRUCIAL",resp: "DELETE: JSON {result : id {index} have been deleted} | PUT: JSON {index: int, name_of_uni : '', courses_offered : []}",info: "Delete/ Put the name of the course in order"
+        },
+        // {
+        //     name: ,method: ,path: ,
+        //     data: ,constr: ,resp: ,info:
+        // },
+        // {
+        //     name: ,method: ,path: ,
+        //     data: ,constr: ,resp: ,info:
+        // },
+        {
             name: "Aichat", method: "POST", path: "/aichat/",
-            data: "BODY", constr: "message, ai_name, history OPTIONAL", resp: "JSON {ai_response, token_count}", info: "Gemini AI"
+            data: "BODY", constr: "{message: '', ai_name: '', history: {user: [], AI: []}} OPTIONAL", resp: "JSON {ai_response : '', token_count: int}", info: "Gemini AI"
         },
         { 
             name: "OTP", method: "POST", path: "/otp/",

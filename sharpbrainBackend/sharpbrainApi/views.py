@@ -28,7 +28,7 @@ BUT OMO, THIS THING GO FAR, I WILL DO THE TASK LATER
 
 class HomeDir(APIView):
     def get(self,request):
-        return HttpJsonResponse(
+        return HttpResponse(
             f"""HOMEPDIR FOR PROJECT SHARPBRAIN2.0\n\n
 ENGINEERED BY DevOpe\n
 GITHUB : {"https://github.com/lastissa"}\n
@@ -53,11 +53,11 @@ def universities_name(request):
             name_of_universities = dataToUpload
         )
         serializer = universitiesNameSerializer(objects, many = False)
-        return JsonResponse(serializer.data)
+        return JsonResponse(serializer.data, safe = False)
     elif request.method == 'GET':
         objects = Universities_name.objects.all()
         serializer = universitiesNameSerializer(objects, many = True)
-        return JsonResponse(serializer.data)
+        return JsonResponse(serializer.data, safe = False)
 
 
 
@@ -78,7 +78,7 @@ def   universities_nameDelPut(request, pk):
            if serializer.is_valid():
                serializer.save()
            return JsonResponse(serializer.data)
-       return(JsonResponse.errors)
+       return JsonResponse(serializer.errors)
            
        
 @api_view(['GET','POST'])
@@ -86,7 +86,7 @@ def coursesOffered(request):
     if request.method == 'POST':
         objects = CourseNames.objects.create(
             name_of_uni = request.data['name_of_uni'],
-            courses_offered = request.data['courses_offered']
+            courses_offered = request.data['courses_offered']#Expecting a list
         )
         serializer = CourseNameSerializer(objects, many = False)
         return JsonResponse(serializer.data)
@@ -99,6 +99,11 @@ def coursesOffered(request):
 
 @api_view(['DELETE', 'PUT'])
 def coursesOfferedDelPut(request, pk):
+    if request.method == "DELETE":
+        objects = CourseNames.objects.get(id = pk)
+        objects.delete()
+        return JsonResponse({'result' : f'id{pk} have been deleted'})
+        
     if request.method == 'PUT':
         objects = CourseNames.objects.get(id = pk)
         serializer = CourseNameSerializer(objects, data=request.data, many = False)
