@@ -143,8 +143,8 @@ def aichat(request):
     
     if ai_name is None or ai_name.strip() == '':
         ai_name = 'Tis'
-    if history is None or history.strip() == '':
-        history = ""
+    if history is None or len(history["user"]) == 0:
+        history = {'user': [], 'AI': []}
     
     
     try:
@@ -166,7 +166,6 @@ user's question: {message}
 
         
         else:
-            print('true')
             ai_response = ai.models.generate_content(model= 'gemini-2.5-flash', contents= f"""
 # STYLE GUIDELINES
 - Tone: Professional, encouraging, and scholarly.
@@ -466,13 +465,13 @@ def updateFirstName(request):
     if emailExist:
         objects = User.objects.get(username = email.upper())
         checkPassword = objects.check_password(password)
-        serializer = UserSerializer(objects, data = {"first_name" : newfirstName.upper()}, partial = True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message" : "success"})
-        return Response ({"message" : serializer.errors})
-    else:
-        return Response({"message" : "no user"})
+        if checkPassword:
+            serializer = UserSerializer(objects, data = {"first_name" : newfirstName.upper()}, partial = True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"message" : "success"})
+        return Response ({"message" : "incorrect_password"})
+    return Response({"message" : "no user"})
     
 
 @api_view(["PATCH"])
