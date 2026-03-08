@@ -12,7 +12,7 @@ import os
 import random
 from django.core.mail import send_mail
 from django.contrib.auth.models import User as myUsers
-from django.http import FileResponse, HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
 env_location = Path(__file__).resolve().parent.parent
@@ -28,15 +28,22 @@ BUT OMO, THIS THING GO FAR, I WILL DO THE TASK LATER
 
 class HomeDir(APIView):
     def get(self,request):
-        return HttpResponse(
-            """this is the home for the sharpbrain2.0 project by devOpe
-and below are the current available endpoint and usage"""
+        return HttpJsonResponse(
+            f"""HOMEPDIR FOR PROJECT SHARPBRAIN2.0\n\n
+ENGINEERED BY DevOpe\n
+GITHUB : {"https://github.com/lastissa"}\n
+X : {"https://x.com/lastissa"}\n
+EMAIL :{"Lastissa11@gmail.com"}""",""
         )
         
         
 class ApiView(APIView):
     def get(self, request):
         return render(request, "api_doc.html")
+
+
+
+
 
 @api_view(['POST', 'GET',])
 def universities_name(request):
@@ -46,18 +53,22 @@ def universities_name(request):
             name_of_universities = dataToUpload
         )
         serializer = universitiesNameSerializer(objects, many = False)
-        return Response(serializer.data)
+        return JsonResponse(serializer.data)
     elif request.method == 'GET':
         objects = Universities_name.objects.all()
         serializer = universitiesNameSerializer(objects, many = True)
-        return Response(serializer.data)
-    
+        return JsonResponse(serializer.data)
+
+
+
+
+
 @api_view(['DELETE', 'PUT'])
 def   universities_nameDelPut(request, pk):
        if request.method == 'DELETE':
             objects = Universities_name.objects.get(id = pk)
             objects.delete()
-            return Response(
+            return JsonResponse(
             {'result' : f'id{pk} have been deleted'}
         )
         
@@ -66,8 +77,8 @@ def   universities_nameDelPut(request, pk):
            serializer = universitiesNameSerializer(objects, data = request.data)
            if serializer.is_valid():
                serializer.save()
-           return Response(serializer.data)
-       return(Response.errors)
+           return JsonResponse(serializer.data)
+       return(JsonResponse.errors)
            
        
 @api_view(['GET','POST'])
@@ -78,13 +89,13 @@ def coursesOffered(request):
             courses_offered = request.data['courses_offered']
         )
         serializer = CourseNameSerializer(objects, many = False)
-        return Response(serializer.data)
+        return JsonResponse(serializer.data)
     
     if request.method == 'GET':
         data = Universities_name.objects.all()
         objects = CourseNames.objects.all()
         serializer = CourseNameSerializer(objects, many = True)
-        return Response(serializer.data)
+        return JsonResponse(serializer.data, safe=False)#The safe false is for allowing none dict value (the course is in a list format) to be serialized
 
 @api_view(['DELETE', 'PUT'])
 def coursesOfferedDelPut(request, pk):
@@ -93,8 +104,8 @@ def coursesOfferedDelPut(request, pk):
         serializer = CourseNameSerializer(objects, data=request.data, many = False)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-    return Response(serializer.errors)
+            return JsonResponse(serializer.data)
+    return JsonResponse(serializer.errors)
 
 
 @api_view(['GET', 'POST'])
@@ -102,7 +113,7 @@ def jambAcceptedSubjects(request):
     if request.method == 'POST':
         existsAlready = JambAcceptedSubjectCombination.objects.filter(uni_name = request.data['uni_name'], course_name = request.data['course_name']).exists()
         if existsAlready:
-            return Response(f"""uni and course already exist
+            return JsonResponse(f"""uni and course already exist
 uni is {request.data['uni_name']} 
 course  is {request.data['course_name']}""")
         else:
@@ -113,11 +124,11 @@ course  is {request.data['course_name']}""")
 
             )
             serializer = JambAcceptedSubjectCombinationSerializer(objects, many = False)
-            return Response(serializer.data)
+            return JsonResponse(serializer.data)
     else:#request will be treated as GET
         objects = JambAcceptedSubjectCombination.objects.all()
         serializer = JambAcceptedSubjectCombinationSerializer(objects, many = True)
-        return Response(serializer.data)
+        return JsonResponse(serializer.data)
         
         
 @api_view(["PUT", "DELETE"])
@@ -129,22 +140,24 @@ def jambAcceptedSubjectsPutDel(request,pk):
         serializer = JambAcceptedSubjectCombinationSerializer(objects, data = request.data, many = False)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.error)
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.error)
          
-         
+
+
+
+
 ai = genai.Client(api_key= api_key)
 @api_view(['POST'])
 def aichat(request):
     data_from_request = request.data
     message = data_from_request.get('message', '')
     ai_name = data_from_request.get('ai_name', '')#Not cumpulsary
-    history = data_from_request.get('history','')
+    history = data_from_request.get('history',{'user': [], 'AI' : []})
     
     if ai_name is None or ai_name.strip() == '':
         ai_name = 'Tis'
-    if history is None or len(history["user"]) == 0:
-        history = {'user': [], 'AI': []}
+   
     
     
     try:
@@ -182,17 +195,17 @@ user's question: {message}
         
     except genai.errors.ClientError as e:
         if "429" in str(e):
-            return Response({
+            return JsonResponse({
         "ai_response" : "I'm a bit overwhelmed! Give me a minute to breathe or suscribe for infinite oxygen tank.",
         "token_count" : 0
     })
         else:
-            return Response({
+            return JsonResponse({
                 "ai_response" : f"{e}",
                 "token_count" : 0
             })
             
-    return Response({
+    return JsonResponse({
         "ai_response" : ai_response.text,
         "token_count" : 0
     })
@@ -212,7 +225,7 @@ Please disregard this email if you did not signup on the sharpbrain app.
 django.conf.settings.DEFAULT_FROM_EMAIL,
 [email]
 )
-            return Response({
+            return JsonResponse({
                 "message" : "Email Already In Use",
                 "otp" : random.randint(1234567, 12345678)
             })
@@ -225,10 +238,10 @@ if the name does not match your name, just ignore this mail, Thank you.
 """,
         django.conf.settings.DEFAULT_FROM_EMAIL,
         [email])
-        return Response({'message': 'OTP sent to email.',
+        return JsonResponse({'message': 'OTP sent to email.',
                          'otp': otp})
     except Exception as e:
-        return Response({'message': f'Failed to send OTP: {str(e)}', 'otp': 0}, )
+        return JsonResponse({'message': f'Failed to send OTP: {str(e)}', 'otp': 0}, )
 
 #for default auth django provides # built only for login, custom user account for signup and probably other features
 @api_view(['POST', 'GET','PUT', 'DELETE', 'PATCH'])
@@ -241,10 +254,10 @@ def userAuth(request):
                 objects = myUsers.objects.get(username = typed_email.upper())
                 if objects.check_password(typed_password):
                     serializer = UserSerializer(objects, many = False)
-                    return Response({'message' : 'success', 'id' : str(serializer.data['username'])})
-            return Response({'message' : 'email and password is required'})
+                    return JsonResponse({'message' : 'success', 'id' : str(serializer.data['username'])})
+            return JsonResponse({'message' : 'email and password is required'})
         except Exception as e:
-            return Response({
+            return JsonResponse({
                 'message' : f'{e}'
             })
             
@@ -261,7 +274,7 @@ def userAuth(request):
             password = password
         )#this could have been replaced by the serializer.save() as it calls the update / create automatically depending of wether my serilizer have data or not
         serializer = UserSerializer(objects, many = False)
-        return Response(serializer.data)
+        return JsonResponse(serializer.data)
     
     if request.method == 'PATCH':
         user_email = request.data.get('email', '').upper()
@@ -269,9 +282,9 @@ def userAuth(request):
         serializer = UserSerializer(rowToUpdate, data = request.data, partial = True)
         if serializer.is_valid():
             serializer.save()
-            return Response({'message' : 'success, password updated succcesfuly'})
+            return JsonResponse({'message' : 'success, password updated succcesfuly'})
         
-        return Response({'message' : 'Password not updated'})
+        return JsonResponse({'message' : 'Password not updated'})
     
     if request.method == 'DELETE':
         user_email = request.data.get('email')
@@ -280,15 +293,15 @@ def userAuth(request):
             rowToDelete = User.objects.get(username = user_email.upper())
             if rowToDelete.check_password(password):
                 rowToDelete.delete()
-                return Response({'message' : 'Account Deleted'})
-        return Response({'message' : 'incorrect  credentials, failed to delete'})
+                return JsonResponse({'message' : 'Account Deleted'})
+        return JsonResponse({'message' : 'incorrect  credentials, failed to delete'})
         
 
 @api_view(['GET'])
 def viewAllUser(request):
     objects = myUsers.objects.all()
     serializer = UserSerializer(objects, many = True)
-    return Response(serializer.data)
+    return JsonResponse(serializer.data)
 
 # @api_view(["GET"])
 # def userExist
@@ -306,9 +319,9 @@ class UserCustomData(APIView):
                 serializer = signupSerializer(objects, many = False)
                 secondObject= User.objects.get(id = int(objects.user.id))
                 secondSerializer = UserSerializer(secondObject, many = False)
-                return Response({"message" : "success", **serializer.data, **secondSerializer.data})
-            return Response({"message": "wrong password"})
-        return Response({"message" : "no user"})
+                return JsonResponse({"message" : "success", **serializer.data, **secondSerializer.data})
+            return JsonResponse({"message": "wrong password"})
+        return JsonResponse({"message" : "no user"})
     def post(self, request):
         user_first_name = request.data.get("first_name").upper().strip()
         user_surname = request.data.get("surname").upper().strip()
@@ -322,7 +335,7 @@ class UserCustomData(APIView):
         try:
             user_password = request.data['password']
         except Exception as e:
-            return Response(status= 400)#400 mean i heard you but i no fit do wetin u want make i do ; bad request
+            return JsonResponse(status= 400)#400 mean i heard you but i no fit do wetin u want make i do ; bad request
         try:
             if_email_already_in_db = SignUpData.objects.get(user__username = user_email)
         except:
@@ -340,13 +353,13 @@ class UserCustomData(APIView):
             if serializer.is_valid():
                 userAuthObject = myUsers.objects.create_user(first_name = user_first_name,last_name = user_surname,username= user_email, email=user_email, password = user_password)
                 serializer.save(user = userAuthObject)
-                return Response({"message" : "success", "data" : [serializer.data]})
+                return JsonResponse({"message" : "success", "data" : [serializer.data]})
             else:
-                return Response({"message" : "Serializer not valid", "error" : serializer.errors})
+                return JsonResponse({"message" : "Serializer not valid", "error" : serializer.errors})
         elif if_email_already_in_db != None:
-            return Response({"message" : "email already exist"})
+            return JsonResponse({"message" : "email already exist"})
         else:
-            return Response({"message" : "error uploading"})
+            return JsonResponse({"message" : "error uploading"})
         
         
         
@@ -359,9 +372,9 @@ def material(request):
         if len(file_name) > 1 and if_file_exist:
             object = Materials.objects.get(file_name = file_name)
             serializer = MaterialSerializer(object, many = False)
-            return Response(serializer.data) #FileResponse() #Does not really understand how the file response work, come back later to solve
+            return JsonResponse(serializer.data) #FileJsonResponse() #Does not really understand how the file response work, come back later to solve
         
-        return Response({"file_name" : "invalid", "file_data" : None, "file_type" : None})
+        return JsonResponse({"file_name" : "invalid", "file_data" : None, "file_type" : None})
     elif request.method == "POST":
         file_name = request.data.get("file_name").upper()
         file_type = request.data.get("file_type").upper()
@@ -370,8 +383,8 @@ def material(request):
         
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response(
+            return JsonResponse(serializer.data)
+        return JsonResponse(
            serializer.errors
         )
         
@@ -387,15 +400,15 @@ class Courses_for_each_dept_view(APIView):
             try:
                 dataExist = CoursesForEachDept.objects.get(uni_name = uni_name, dept_name = dept_name)
                 dataExist = False
-                return Response({"message" : "data exist"})
+                return JsonResponse({"message" : "data exist"})
             except:
                 objects = CoursesForEachDept.objects.create(uni_name = uni_name, dept_name = dept_name, first_semester_courses =first_semester_courses, second_semester_courses = second_semester_courses)
                 serializer = CoursesForEachDeptSeriaizer(objects, many = False)
-                return Response(serializer.data)
+                return JsonResponse(serializer.data)
             
             
         except Exception as e:
-            return Response({"message" : str(e)})
+            return JsonResponse({"message" : str(e)})
         
 
            
@@ -405,10 +418,10 @@ class Courses_for_each_dept_view(APIView):
         try:
             objects = CoursesForEachDept.objects.get(uni_name = uni_name_.strip().upper(), dept_name =dept_name_.strip().upper())
             serializer = CoursesForEachDeptSeriaizer(objects, many = False)
-            return Response({"message" : "successful", **serializer.data})
+            return JsonResponse({"message" : "successful", **serializer.data})
         except Exception as e:
            
-            return Response({"message": f"{e}"})
+            return JsonResponse({"message": f"{e}"})
        
 @api_view(["GET"])
 def passwordCheck(request):
@@ -417,17 +430,17 @@ def passwordCheck(request):
         password = request.query_params["password"]
         object = User.objects.get(username = email.upper())
         if object.check_password(password):
-            return Response({"message": "correct"})
-        return Response({"message" : "incorrect"})
+            return JsonResponse({"message": "correct"})
+        return JsonResponse({"message" : "incorrect"})
     except Exception as e:
-        return Response({"message" : f"{e}"})
+        return JsonResponse({"message" : f"{e}"})
     
     
 @api_view(["GET"])
 def emailCheck(request):
     email = request.query_params["email"]
     object = User.objects.filter(username = email.upper()).exists()
-    return Response({"message" : str(object)})
+    return JsonResponse({"message" : str(object)})
         
     
 @api_view(["PATCH"])
@@ -439,7 +452,7 @@ def updateUserName(request):
     #Check if the new email exist first
     newEmailExists = myUsers.objects.filter(username = newEmailToUserName.upper()).exists()
     if newEmailExists:
-        return Response({"message" : "email exist"})
+        return JsonResponse({"message" : "email exist"})
     #Check if the old email even exist to begin with
     oldEmailExists = myUsers.objects.filter(username = oldEmailToUserName.upper()).exists()
     if oldEmailExists:
@@ -447,13 +460,13 @@ def updateUserName(request):
         #Check for password
         passwordCheck = objects.check_password(password)
         if passwordCheck == False:
-            return Response({"message" : "incorrect password"})
+            return JsonResponse({"message" : "incorrect password"})
         serializer = UserSerializer(objects, data = {"email" : newEmailToUserName.upper(), "username" : newEmailToUserName.upper()}, partial = True)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message" : "success"})
-        return Response({"message" : "Something went wrong", "e" : serializer.errors})
-    return Response({"message" : "old_email does not exist"})
+            return JsonResponse({"message" : "success"})
+        return JsonResponse({"message" : "Something went wrong", "e" : serializer.errors})
+    return JsonResponse({"message" : "old_email does not exist"})
 
 
 @api_view(["PATCH"])
@@ -469,9 +482,9 @@ def updateFirstName(request):
             serializer = UserSerializer(objects, data = {"first_name" : newfirstName.upper()}, partial = True)
             if serializer.is_valid():
                 serializer.save()
-                return Response({"message" : "success"})
-        return Response ({"message" : "incorrect_password"})
-    return Response({"message" : "no user"})
+                return JsonResponse({"message" : "success"})
+        return JsonResponse ({"message" : "incorrect_password"})
+    return JsonResponse({"message" : "no user"})
     
 
 @api_view(["PATCH"])
@@ -486,10 +499,10 @@ def updateSurName(request):
         serializer = UserSerializer(objects, data = {"sur_name" : newsurName.upper()}, partial = True)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message" : "success"})
-        return Response ({"message" : serializer.errors})
+            return JsonResponse({"message" : "success"})
+        return JsonResponse ({"message" : serializer.errors})
     else:
-        return Response({"message" : "no user"})
+        return JsonResponse({"message" : "no user"})
     
 
 @api_view(["PATCH"])

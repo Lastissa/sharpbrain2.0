@@ -27,22 +27,39 @@
 </div>
 
 <script>
-    const BASE_URL = "https://sharpbrain.onrender.com"; 
+    const BASE_URL = "https://sharpbrain2-0.onrender.com"; 
 
     const endpoints = [
         { 
             name: "Home", method: "GET", path: "/", 
             data: "None", constr: "None", resp: "Plain Text" , info : "Home directory"
         },
+
         { 
             name: "API Docs", method: "GET", path: "/api_doc/", 
-            data: "None", constr: "None", resp: "This HTML" , info : "Where you currently are, this page is key for understanding how my api works"
+            data: "None", constr: "None", resp: "This HTML" , info : "Api documentation"
+        },
+        {
+            name: "Universities_name", method: "GET, POST", path: "/universities_name/",
+            data: " GET: None | POST: body ", constr: "GET: None | POST : name_of_universities (OPTIONAL)", resp: "JSON {id, name_of_universities}", info: "Update/Get the name of uni in Db"
+        },
+        {
+            name: "Universities_nameDelPut", method: "PUT,DELETE", path: "/universities_name/{index}",
+            data: " DELETE: None | PUT: None ", constr: "DELETE: None | PUT : name_of_universities (CRUCIAL)", resp: "DELETE: JSON {'result' : 'id {index} have been deleted'} | PUT: JSON index, name_of_universities", info: "Delete/ Put the name of uni in Db"
+        },
+        {
+            name: "CoursesOffered", method: "GET, POST", path: "/course_names/",
+            data: "POST:BODY | GET: None", constr: "POST: | GET: none", resp: "", info: ""
+        },
+        {
+            name: "Aichat", method: "POST", path: "/aichat/",
+            data: "BODY", constr: "message, ai_name, history OPTIONAL", resp: "JSON {ai_response, token_count}", info: "Gemini AI"
         },
         { 
-            name: "OTP", method: "POST", path: "/otp/", 
+            name: "OTP", method: "POST", path: "/otp/",
             data: "Body", 
             constr: "email, surname,firstname (CRUCIAL)", 
-            resp: "JSON {message, otp}" , info : "For sendind one time password to email, even though the smtp support multiple email, i am only allowing one "
+            resp: "JSON {message, otp}" , info : "Send one time password(opt) to Email."
         },
         { 
             name: "UserCustomData", method: "POST", path: "/signup/", 
@@ -50,42 +67,7 @@
             constr: "password (CRUCIAL), email, first_name, surname, dept_name (OPTIONAL)", 
             resp: "JSON {message, data}" , info : "Empty"
         },
-        { 
-            name: "AI Tutor Chat", method: "POST", path: "/aichat/", 
-            data: "Body", 
-            constr: "message, ai_name, history (OPTIONAL .get())", 
-            resp: "JSON {ai_response, token_count}" , info : "Empty"
-        },
-        { 
-            name: "University List", method: "GET/POST", path: "/universities_name/", 
-            data: "Body (if POST)", 
-            constr: "name_of_universities (OPTIONAL .get())", 
-            resp: "Serialized Uni Data" , info : "Empty"
-        },
-        { 
-            name: "Dept Courses", method: "GET", path: "/courses_for_each_dept/", 
-            data: "Query Params", 
-            constr: "[dept_name], [uni_name] (CRUCIAL)", 
-            resp: "JSON {successful, data}" , info : "Empty"
-        },
-        { 
-            name: "Material Fetch", method: "GET/POST", path: "/material/", 
-            data: "Body", 
-            constr: "file_name, file_type, file_data (OPTIONAL .get())", 
-            resp: "File Data / JSON" , info : "Empty"
-        },
-        { 
-            name: "Update Email", method: "PATCH", path: "/update_email/", 
-            data: "Body", 
-            constr: "[old_email], [new_email], [password] (CRUCIAL)", 
-            resp: "JSON {success}" , info : "Empty"
-        },
-        { 
-            name: "Password Check", method: "GET", path: "/password_check/", 
-            data: "Query Params", 
-            constr: "[email], [password] (CRUCIAL)", 
-            resp: "JSON {message}" , info : "Empty"
-        }
+        
     ];
 
     const container = document.getElementById('api-content');
@@ -94,7 +76,7 @@
         container.innerHTML += `
             <div class="endpoint">
                 <h3>INFORMATION: ${ep.info}</h3>
-                <div><span class="method">${ep.method}</span> <span class="url">${BASE_URL}${ep.path}</span></div>
+                <div><span class="method">${ep.method}</span> <a href= "${BASE_URL}${ep.path}" target = "_blank" class="url">${BASE_URL}${ep.path}</a></div>
                 <span class="label">View Name</span> <strong>${ep.name}</strong>
                 <span class="label">Data Collection Mode {Request} :   ${ep.data}</span>
                 <span class="label">Data Construction</span> <em>${ep.constr}</em>
