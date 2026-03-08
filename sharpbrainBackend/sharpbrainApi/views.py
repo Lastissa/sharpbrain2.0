@@ -133,7 +133,7 @@ course  is {request.data['course_name']}""")
     else:#request will be treated as GET
         objects = JambAcceptedSubjectCombination.objects.all()
         serializer = JambAcceptedSubjectCombinationSerializer(objects, many = True)
-        return JsonResponse(serializer.data)
+        return JsonResponse(serializer.data, safe=False)
         
         
 @api_view(["PUT", "DELETE"])

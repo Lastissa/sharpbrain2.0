@@ -55,10 +55,10 @@
             name: 'CoursesOfferedDelPut',method: "PUT,DELETE",path: '/course_names/{index}/',
             data: " DELETE: None | PUT: None " ,constr: "DELETE: None | PUT : {courses_offered: [], } (OPTIONAL) {name_of_uni: str} CRUCIAL",resp: "DELETE: JSON {result : id {index} have been deleted} | PUT: JSON {index: int, name_of_uni : '', courses_offered : []}",info: "Delete/ Put the name of the course in order"
         },
-        // {
-        //     name: ,method: ,path: ,
-        //     data: ,constr: ,resp: ,info:
-        // },
+        {
+            name: "JambAcceptedSubjects",method: "GET, POST",path: "/jamb_subject_combination/",
+            data: "GET: None| POST: where i pause, continue here ",constr: "",resp: "",info:""
+        },
         // {
         //     name: ,method: ,path: ,
         //     data: ,constr: ,resp: ,info:
