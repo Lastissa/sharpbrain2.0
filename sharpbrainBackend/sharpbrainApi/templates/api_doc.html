@@ -27,8 +27,8 @@
 </div>
 
 <script>
-    const BASE_URL = "https://sharpbrain2-0.onrender.com"; 
-
+    // const BASE_URL = "https://sharpbrain2-0.onrender.com"; 
+    const BASE_URL = "https://esta-sensate-unquickly.ngrok-free.dev";
     const endpoints = [
         { 
             name: "Home", method: "GET", path: "/", 
@@ -57,12 +57,12 @@
         },
         {
             name: "JambAcceptedSubjects",method: "GET, POST",path: "/jamb_subject_combination/",
-            data: "GET: None| POST: where i pause, continue here ",constr: "",resp: "",info:""
+            data: "GET: None| POST: body",constr: "GET: None | POST: {uni_name: '', course_name: ''} CRUCIAL",resp: "GET: JSON {id : int, uni_name: '', course_name: '', subject_combination: [], core_subjects: []}| POST: same correct data you put in with index",info:"Cross verfying aspirant subjecr combination compatibility with jamb, i was affected by this during my own time."
         },
-        // {
-        //     name: ,method: ,path: ,
-        //     data: ,constr: ,resp: ,info:
-        // },
+        {
+            name: "jambAcceptedSubjectsPutDel",method: "DELETE | PUT",path: "/jamb_subject_combination{index}/",
+            data: "DELETE: <i>still in progress<i>| PUT: None",constr: "DELETE: | PUT: {id : int, uni_name: '', course_name: '', subject_combination: [], core_subjects: []} OPTIONAL",resp: "DELETE: | PUT: same correct data you put in with index",info: "Delete/ Put the name of the jamb subject combination in order"
+        },
         {
             name: "Aichat", method: "POST", path: "/aichat/",
             data: "BODY", constr: "{message: '', ai_name: '', history: {user: [], AI: []}} OPTIONAL", resp: "JSON {ai_response : '', token_count: int}", info: "Gemini AI"

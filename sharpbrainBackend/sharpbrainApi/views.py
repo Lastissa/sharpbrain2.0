@@ -29,14 +29,7 @@ BUT OMO, THIS THING GO FAR, I WILL DO THE TASK LATER
 class HomeDir(APIView):
     def get(self,request):
         return render(request, "home.html")
-        #return HttpResponse(
-#            f"""HOMEPDIR FOR PROJECT SHARPBRAIN2.0\n\n
-#ENGINEERED BY DevOpe\n
-#GITHUB : {"https://github.com/lastissa"}\n
-#X : {"https://x.com/lastissa"}\n
-#EMAIL :{"Lastissa11@gmail.com"}""",""
-#        )
-#        
+
         
 class ApiView(APIView):
     def get(self, request):
@@ -117,7 +110,7 @@ def coursesOfferedDelPut(request, pk):
 @api_view(['GET', 'POST'])
 def jambAcceptedSubjects(request):
     if request.method == 'POST':
-        existsAlready = JambAcceptedSubjectCombination.objects.filter(uni_name = request.data['uni_name'], course_name = request.data['course_name']).exists()
+        existsAlready = JambAcceptedSubjectCombination.objects.filter(uni_name = request.data['uni_name'].upper(), course_name = request.data['course_name'].upper()).exists()
         if existsAlready:
             return JsonResponse(f"""uni and course already exist
 uni is {request.data['uni_name']} 
@@ -248,6 +241,10 @@ if the name does not match your name, just ignore this mail, Thank you.
                          'otp': otp})
     except Exception as e:
         return JsonResponse({'message': f'Failed to send OTP: {str(e)}', 'otp': 0}, )
+
+
+
+
 
 #for default auth django provides # built only for login, custom user account for signup and probably other features
 @api_view(['POST', 'GET','PUT', 'DELETE', 'PATCH'])
