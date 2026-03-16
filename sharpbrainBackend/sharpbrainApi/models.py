@@ -46,6 +46,7 @@ class Materials(models.Model):#this model can take in any kind of file but the f
 class CoursesForEachDept(models.Model):
     dept_name = models.CharField(max_length= 150, blank= False, null= False)
     uni_name = models.CharField(max_length= 150, blank= False, null= False)
+    #update the model to allow level update
     first_semester_courses = models.JSONField(default= list)
     second_semester_courses = models.JSONField(default= list)
 

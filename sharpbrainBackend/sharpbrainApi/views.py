@@ -246,68 +246,74 @@ if the name does not match your name, just ignore this mail, Thank you.
 
 
 
-#for default auth django provides # built only for login, custom user account for signup and probably other features
-@api_view(['POST', 'GET','PUT', 'DELETE', 'PATCH'])
-def userAuth(request):
-    if request.method == 'GET':
-        try:
-            typed_email = 'LASTISSA11@GMAIL.COM'#request.data.get('email', '')
-            typed_password = 'Realmadrid123'#request.data.get('password', '')
-            if typed_email and typed_password:
-                objects = myUsers.objects.get(username = typed_email.upper())
-                if objects.check_password(typed_password):
-                    serializer = UserSerializer(objects, many = False)
-                    return JsonResponse({'message' : 'success', 'id' : str(serializer.data['username'])})
-            return JsonResponse({'message' : 'email and password is required'})
-        except Exception as e:
-            return JsonResponse({
-                'message' : f'{e}'
-            })
+# #for default auth django provides # customUser handles account creation and logging in but this handles the update and stuff
+# @api_view(['POST', 'GET','PUT', 'DELETE', 'PATCH'])
+# def userAuth(request):
+#     if request.method == 'GET':
+#         try:
+#             typed_email = 'LASTISSA11@GMAIL.COM'#request.data.get('email', '')
+#             typed_password = 'Realmadrid123'#request.data.get('password', '')
+#             if typed_email and typed_password:
+#                 objects = myUsers.objects.get(username = typed_email.upper())
+#                 if objects.check_password(typed_password):
+#                     serializer = UserSerializer(objects, many = False)
+#                     return JsonResponse({'message' : 'success', 'id' : str(serializer.data['username'])})
+#             return JsonResponse({'message' : 'email and password is required'})
+#         except Exception as e:
+#             return JsonResponse({
+#                 'message' : f'{e}'
+#             })
             
-    if request.method == 'POST':
-        user_email = request.data['email']
-        firstName = request.data['firstName']
-        surName = request.data['surName']
-        password = request.data['password']
-        objects = myUsers.objects.create_user(
-            username = user_email.upper(),
-            first_name = firstName.upper(),
-            last_name = surName.upper(),
-            email = user_email.upper(),
-            password = password
-        )#this could have been replaced by the serializer.save() as it calls the update / create automatically depending of wether my serilizer have data or not
-        serializer = UserSerializer(objects, many = False)
-        return JsonResponse(serializer.data)
+#     if request.method == 'POST':
+#         user_email = request.data['email']
+#         firstName = request.data['firstName']
+#         surName = request.data['surName']
+#         password = request.data['password']
+#         objects = myUsers.objects.create_user(
+#             username = user_email.upper(),
+#             first_name = firstName.upper(),
+#             last_name = surName.upper(),
+#             email = user_email.upper(),
+#             password = password
+#         )#this could have been replaced by the serializer.save() as it calls the update / create automatically depending of wether my serilizer have data or not
+#         serializer = UserSerializer(objects, many = False)
+#         return JsonResponse(serializer.data)
     
-    if request.method == 'PATCH':
-        user_email = request.data.get('email', '').upper()
-        rowToUpdate = myUsers.objects.get(username = user_email) #since email is same as username
-        serializer = UserSerializer(rowToUpdate, data = request.data, partial = True)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse({'message' : 'success, password updated succcesfuly'})
+#     if request.method == 'PATCH':
+#         user_email = request.data.get('email', '').upper()
+#         rowToUpdate = myUsers.objects.get(username = user_email) #since email is same as username
+#         serializer = UserSerializer(rowToUpdate, data = request.data, partial = True)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return JsonResponse({'message' : 'success, password updated succcesfuly'})
         
-        return JsonResponse({'message' : 'Password not updated'})
+#         return JsonResponse({'message' : 'Password not updated'})
     
-    if request.method == 'DELETE':
-        user_email = request.data.get('email')
-        password = request.data.get('password')
-        if user_email:
-            rowToDelete = User.objects.get(username = user_email.upper())
-            if rowToDelete.check_password(password):
-                rowToDelete.delete()
-                return JsonResponse({'message' : 'Account Deleted'})
-        return JsonResponse({'message' : 'incorrect  credentials, failed to delete'})
+#     if request.method == 'DELETE':
+#         user_email = request.data.get('email')
+#         password = request.data.get('password')
+#         if user_email:
+#             rowToDelete = User.objects.get(username = user_email.upper())
+#             if rowToDelete.check_password(password):
+#                 rowToDelete.delete()
+#                 return JsonResponse({'message' : 'Account Deleted'})
+#         return JsonResponse({'message' : 'incorrect  credentials, failed to delete'})
         
 
+#This is for myslef, for fun and personal analysis only
 @api_view(['GET'])
 def viewAllUser(request):
-    objects = myUsers.objects.all()
-    serializer = UserSerializer(objects, many = True)
-    return JsonResponse(serializer.data)
+        objects = myUsers.objects.all()
+        serializer = UserSerializer(objects, many = True)
+        return JsonResponse(serializer.data, safe=False)
+    
+    
+    #fro deleting a user account entirely
+@api_view(["DELETE"])
+def deleteAUser():
+    return JsonResponse("Still coming")
 
-# @api_view(["GET"])
-# def userExist
+
 
 
 #for other feilds i need to save during registration that django does not provide
@@ -324,7 +330,7 @@ class UserCustomData(APIView):
                 secondSerializer = UserSerializer(secondObject, many = False)
                 return JsonResponse({"message" : "success", **serializer.data, **secondSerializer.data})
             return JsonResponse({"message": "wrong password"})
-        return JsonResponse({"message" : "no user"})
+        return JsonResponse({"message" : "no user found"})
     def post(self, request):
         user_first_name = request.data.get("first_name").upper().strip()
         user_surname = request.data.get("surname").upper().strip()
@@ -369,7 +375,7 @@ class UserCustomData(APIView):
 
 @api_view(["POST",'GET'])
 def material(request):
-    if request.method == "GET":#return three things : (1) -> file_name(if file foes not exiat, return file_name as no_file)
+    if request.method == "GET":#return three things : (1) -> file_name(if file foes not exist, return file_name as no_file)
         file_name = request.data.get("file_name", "").upper()
         if_file_exist = Materials.objects.filter(file_name = file_name).exists()
         if len(file_name) > 1 and if_file_exist:

@@ -20,8 +20,9 @@ urlpatterns = [
     
     
     
-    path('users/', views.userAuth),
-    path('users/all', views.viewAllUser),
+    # path('users/', views.userAuth),
+    path('users/all/', views.viewAllUser),
+    path('user/delete', views.deleteAUser),
     path('aichat/', views.aichat),
 
     path('universities_name/<str:pk>/', views.universities_nameDelPut),

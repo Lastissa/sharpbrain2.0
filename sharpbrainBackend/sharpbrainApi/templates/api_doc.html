@@ -27,8 +27,8 @@
 </div>
 
 <script>
-    // const BASE_URL = "https://sharpbrain2-0.onrender.com"; 
-    const BASE_URL = "https://esta-sensate-unquickly.ngrok-free.dev";
+    const BASE_URL = "https://sharpbrain2-0.onrender.com"; 
+    // const BASE_URL = "https://esta-sensate-unquickly.ngrok-free.dev";
     const endpoints = [
         { 
             name: "Home", method: "GET", path: "/", 
@@ -60,7 +60,7 @@
             data: "GET: None| POST: body",constr: "GET: None | POST: {uni_name: '', course_name: ''} CRUCIAL",resp: "GET: JSON {id : int, uni_name: '', course_name: '', subject_combination: [], core_subjects: []}| POST: same correct data you put in with index",info:"Cross verfying aspirant subjecr combination compatibility with jamb, i was affected by this during my own time."
         },
         {
-            name: "jambAcceptedSubjectsPutDel",method: "DELETE | PUT",path: "/jamb_subject_combination{index}/",
+            name: "jambAcceptedSubjectsPutDel",method: "DELETE | PUT",path: "/jamb_subject_combination/{index}/",
             data: "DELETE: <i>still in progress<i>| PUT: None",constr: "DELETE: | PUT: {id : int, uni_name: '', course_name: '', subject_combination: [], core_subjects: []} OPTIONAL",resp: "DELETE: | PUT: same correct data you put in with index",info: "Delete/ Put the name of the jamb subject combination in order"
         },
         {
@@ -73,12 +73,30 @@
             constr: "email, surname,firstname (CRUCIAL)", 
             resp: "JSON {message, otp}" , info : "Send one time password(opt) to Email."
         },
-        { 
+        {
+            name : "viewAllUser", method: "GET", path: "/users/all/",
+            data: "None",
+            constr: "None", resp: "List [{first_name: '', last_name: '', email: '', username: ''}]",
+            info: "ADMIN USAGE ONLY; (remove soon): "
+        },
+        {
+            name: "deleteAUser", method: "DELETE", path: "",
+            data:"BODY",
+            constr: "{email: '', password: ''} CRUCIAL" , resp: "JSON {'message' : ''}",
+            info: "Delete user account entirely"
+        },
+        {
             name: "UserCustomData", method: "POST", path: "/signup/", 
             data: "Body", 
             constr: "password (CRUCIAL), email, first_name, surname, dept_name (OPTIONAL)", 
-            resp: "JSON {message, data}" , info : "Empty"
+            resp: "JSON {message, data}" , info : "Upload user full details, quite heavy for GET method, use passwordCheck istead unless it is login"
         },
+        {
+            name: "Courses_for_each_dept_view", method: "GET| POST", path: "/courses_for_each_dept/",
+            data: "GET: query_param | POST: Body",
+            constr: "GET: {uni_name: '', dept_name: ''} CRUCIAL | POST: {uni_name: '', dept_name: '', first_semester_courses: [], second_semester_courses: []}",
+            resp: "varies", info: "COurses each dept have like mth 101, cos 101, etc"
+        }
         
     ];
 
