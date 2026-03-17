@@ -2,102 +2,148 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SharpBrain 2.0 API Docs</title>
     <style>
-        body { font-family: monospace; background: #fafafa; color: #333; padding: 40px; line-height: 1.5; }
-        .wrapper { max-width: 900px; margin: 0 auto; }
-        h1 { border-bottom: 2px solid #333; padding-bottom: 10px; font-size: 20px; }
-        .endpoint { background: #fff; border: 1px solid #ddd; padding: 20px; margin-bottom: 10px; }
-        .method { font-weight: bold; color: #005cc5; margin-right: 10px; }
-        .url { color: #d73a49; font-weight: bold; }
-        .label { color: #6a737d; font-size: 12px; text-transform: uppercase; margin-top: 10px; display: block; }
-        table { width: 100%; margin-top: 10px; border-collapse: collapse; }
-        td { padding: 5px; border-bottom: 1px dashed #eee; font-size: 13px; }
-        .crucial { color: red; }
-        .optional { color: green; }
+        :root {
+            --primary: #005cc5;
+            --danger: #d73a49;
+            --bg: #eaecef; /* Slightly darker background to make cards pop */
+            --card: #ffffff;
+            --text: #222222; /* Darker text for readability */
+            --muted: #555555;
+        }
+
+        body { 
+            font-family: system-ui, -apple-system, monospace; 
+            background: var(--bg); 
+            color: var(--text); 
+            padding: 15px; 
+            line-height: 1.6; /* More breathing room between lines */
+            margin: 0;
+            font-size: 16px; /* Explicitly larger base font for mobile */
+        }
+
+        .wrapper { 
+            max-width: 900px; 
+            margin: 0 auto; 
+        }
+
+        h1 { 
+            border-bottom: 3px solid var(--text); 
+            padding-bottom: 12px; 
+            font-size: clamp(24px, 6vw, 32px); /* Much bigger header */
+            margin-top: 10px;
+            font-weight: 900;
+        }
+
+        .endpoint { 
+            background: var(--card); 
+            border: 1px solid #d1d5da; 
+            border-radius: 12px; 
+            padding: 20px; /* Increased padding inside cards */
+            margin-bottom: 20px; /* More space between cards */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        .endpoint h3 {
+            margin-top: 0;
+            font-size: 18px; /* Bigger titles */
+            color: #111;
+            line-height: 1.4;
+        }
+
+        /* Responsive URL Container */
+        .url-container {
+            display: flex;
+            flex-direction: column; 
+            gap: 8px;
+            background: #f6f8fa;
+            padding: 15px; /* Bigger tap area */
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #e1e4e8;
+        }
+
+        .method { 
+            font-weight: 900; 
+            color: var(--primary); 
+            font-size: 16px; /* Increased */
+            letter-spacing: 0.5px;
+        }
+
+        .url { 
+            color: var(--danger); 
+            font-weight: 700; 
+            text-decoration: none;
+            word-break: break-all; 
+            font-size: 16px; /* Increased */
+        }
+
+        .url:hover { text-decoration: underline; }
+
+        .label { 
+            color: var(--muted); 
+            font-size: 14px; /* Bumped up from 12px */
+            text-transform: uppercase; 
+            margin-top: 18px; 
+            margin-bottom: 6px;
+            display: block; 
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .data-text {
+            font-size: 16px; /* Bumped up from 14px */
+            margin: 0;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* Desktop Adjustments (Scales up even more on PC) */
+        @media (min-width: 600px) {
+            body { padding: 40px; font-size: 18px; }
+            .url-container {
+                flex-direction: row; 
+                align-items: center;
+                gap: 15px;
+            }
+            .endpoint { padding: 30px; margin-bottom: 30px; }
+            .endpoint h3 { font-size: 22px; }
+            .label { font-size: 15px; }
+            .data-text { font-size: 18px; }
+            .method, .url { font-size: 18px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="wrapper">
     <h1>SHARPBRAIN 2.0 API SYSTEM</h1>
-
-    <div id="api-content">
-        </div>
+    <div id="api-content"></div>
 </div>
 
 <script>
     const BASE_URL = "https://sharpbrain2-0.onrender.com"; 
-    // const BASE_URL = "https://esta-sensate-unquickly.ngrok-free.dev";
+    
     const endpoints = [
-        { 
-            name: "Home", method: "GET", path: "/", 
-            data: "None", constr: "None", resp: "Plain Text" , info : "Home directory"
-        },
-
-        { 
-            name: "API Docs", method: "GET", path: "/api_doc/", 
-            data: "None", constr: "None", resp: "This HTML" , info : "Api documentation"
-        },
+        { name: "Home", method: "GET", path: "/", data: "None", constr: "None", resp: "Plain Text" , info : "Home directory" },
+        { name: "API Docs", method: "GET", path: "/api_doc/", data: "None", constr: "None", resp: "This HTML" , info : "Api documentation" },
+        { name: "Universities_name", method: "GET, POST", path: "/universities_name/", data: " GET: None | POST: body ", constr: "GET: None | POST : {name_of_universities : ''} (OPTIONAL)", resp: "GET: A list of JSONs {id, name_of_universities} | POST: JSON {id, name_of_universities}", info: "Post/Get the name of uni in Db" },
+        { name: "Universities_nameDelPut", method: "PUT, DELETE", path: "/universities_name/{index}/", data: " DELETE: None | PUT: None ", constr: "DELETE: None | PUT : {name_of_universities: str} (CRUCIAL)", resp: "DELETE: JSON {result : id {index} have been deleted} | PUT: JSON {index, name_of_universities}", info: "Delete/ Put the name of uni in Db" },
+        { name: "CoursesOffered", method: "GET, POST", path: "/course_names/", data: "POST: BODY | GET: None", constr: "POST: {name_of_uni : '', courses_offered : []} CRUCIAL | GET: none", resp: "POST: JSON {id : int, name_of_uni : '', courses_offered : [] } | GET: A List of JSONs {id : int, name_of_uni : '', courses_offered : [] }", info: "Update or Get available courses in a university" },
+        { name: 'CoursesOfferedDelPut', method: "PUT, DELETE", path: '/course_names/{index}/', data: " DELETE: None | PUT: None " , constr: "DELETE: None | PUT : {courses_offered: [], } (OPTIONAL) {name_of_uni: str} CRUCIAL", resp: "DELETE: JSON {result : id {index} have been deleted} | PUT: JSON {index: int, name_of_uni : '', courses_offered : []}", info: "Delete/ Put the name of the course in order" },
+        { name: "JambAcceptedSubjects", method: "GET, POST", path: "/jamb_subject_combination/", data: "GET: None | POST: body", constr: "GET: None | POST: {uni_name: '', course_name: ''} CRUCIAL", resp: "GET: JSON {id : int, uni_name: '', course_name: '', subject_combination: [], core_subjects: []} | POST: same correct data you put in with index", info:"Cross verfying aspirant subject combination compatibility with jamb." },
+        { name: "jambAcceptedSubjectsPutDel", method: "DELETE | PUT", path: "/jamb_subject_combination/{index}/", data: "DELETE: still in progress | PUT: None", constr: "DELETE: | PUT: {id : int, uni_name: '', course_name: '', subject_combination: [], core_subjects: []} OPTIONAL", resp: "DELETE: | PUT: same correct data you put in with index", info: "Delete/ Put the name of the jamb subject combination in order" },
+        { name: "Aichat", method: "POST", path: "/aichat/", data: "BODY", constr: "{message: '', ai_name: '', history: {user: [], AI: []}} OPTIONAL", resp: "JSON {ai_response : '', token_count: int}", info: "Gemini AI Chat" },
+        { name: "OTP", method: "POST", path: "/otp/", data: "Body", constr: "email, surname, firstname (CRUCIAL)", resp: "JSON {message, otp}" , info : "Send one time password(otp) to Email." },
+        { name: "viewAllUser", method: "GET", path: "/users/all/", data: "None", constr: "None", resp: "List [{first_name: '', last_name: '', email: '', username: ''}]", info: "ADMIN USAGE ONLY; (remove soon)" },
+        { name: "deleteAUser", method: "DELETE", path: "/users/delete/", data:"BODY", constr: "{email: '', password: ''} CRUCIAL" , resp: "JSON {'message' : ''}", info: "Delete user account entirely" },
+        { name: "UserCustomData", method: "POST", path: "/signup/", data: "Body", constr: "password (CRUCIAL), email, first_name, surname, dept_name (OPTIONAL)", resp: "JSON {message, data}" , info : "Upload user full details" },
+        { name: "Courses_for_each_dept_view", method: "GET | POST", path: "/courses_for_each_dept/", data: "GET: query_param | POST: Body", constr: "GET: {uni_name: '', dept_name: ''} CRUCIAL | POST: {uni_name: '', dept_name: '', first_semester_courses: [], second_semester_courses: []}", resp: "varies", info: "Courses each dept have like mth 101, cos 101, etc" },
         {
-            name: "Universities_name", method: "GET, POST", path: "/universities_name/",
-            data: " GET: None | POST: body ", constr: "GET: None | POST : {name_of_universities : ''} (OPTIONAL)", resp: "GET: A list of JSONs {id, name_of_universities} | POST: JSON {id, name_of_universities}", info: "Post/Get the name of uni in Db"
-        },
-        {
-            name: "Universities_nameDelPut", method: "PUT,DELETE", path: "/universities_name/{index}/",
-            data: " DELETE: None | PUT: None ", constr: "DELETE: None | PUT : {name_of_universities: str} (CRUCIAL)", resp: "DELETE: JSON {result : id {index} have been deleted} | PUT: JSON {index, name_of_universities}", info: "Delete/ Put the name of uni in Db"
-        },
-        {
-            name: "CoursesOffered", method: "GET, POST", path: "/course_names/",
-            data: "POST:BODY | GET: None", constr: "POST: {name_of_uni : '', courses_offered : []} CRUCIAL | GET: none", resp: "POST: JSON {id : int, name_of_uni : '', courses_offered : [] } | GET: A List of JSONs {id : int, name_of_uni : '', courses_offered : [] }", info: "UpdATE or Get available courses in a university"
-        },
-        {
-            name: 'CoursesOfferedDelPut',method: "PUT,DELETE",path: '/course_names/{index}/',
-            data: " DELETE: None | PUT: None " ,constr: "DELETE: None | PUT : {courses_offered: [], } (OPTIONAL) {name_of_uni: str} CRUCIAL",resp: "DELETE: JSON {result : id {index} have been deleted} | PUT: JSON {index: int, name_of_uni : '', courses_offered : []}",info: "Delete/ Put the name of the course in order"
-        },
-        {
-            name: "JambAcceptedSubjects",method: "GET, POST",path: "/jamb_subject_combination/",
-            data: "GET: None| POST: body",constr: "GET: None | POST: {uni_name: '', course_name: ''} CRUCIAL",resp: "GET: JSON {id : int, uni_name: '', course_name: '', subject_combination: [], core_subjects: []}| POST: same correct data you put in with index",info:"Cross verfying aspirant subjecr combination compatibility with jamb, i was affected by this during my own time."
-        },
-        {
-            name: "jambAcceptedSubjectsPutDel",method: "DELETE | PUT",path: "/jamb_subject_combination/{index}/",
-            data: "DELETE: <i>still in progress<i>| PUT: None",constr: "DELETE: | PUT: {id : int, uni_name: '', course_name: '', subject_combination: [], core_subjects: []} OPTIONAL",resp: "DELETE: | PUT: same correct data you put in with index",info: "Delete/ Put the name of the jamb subject combination in order"
-        },
-        {
-            name: "Aichat", method: "POST", path: "/aichat/",
-            data: "BODY", constr: "{message: '', ai_name: '', history: {user: [], AI: []}} OPTIONAL", resp: "JSON {ai_response : '', token_count: int}", info: "Gemini AI"
-        },
-        { 
-            name: "OTP", method: "POST", path: "/otp/",
-            data: "Body", 
-            constr: "email, surname,firstname (CRUCIAL)", 
-            resp: "JSON {message, otp}" , info : "Send one time password(opt) to Email."
-        },
-        {
-            name : "viewAllUser", method: "GET", path: "/users/all/",
-            data: "None",
-            constr: "None", resp: "List [{first_name: '', last_name: '', email: '', username: ''}]",
-            info: "ADMIN USAGE ONLY; (remove soon): "
-        },
-        {
-            name: "deleteAUser", method: "DELETE", path: "",
-            data:"BODY",
-            constr: "{email: '', password: ''} CRUCIAL" , resp: "JSON {'message' : ''}",
-            info: "Delete user account entirely"
-        },
-        {
-            name: "UserCustomData", method: "POST", path: "/signup/", 
-            data: "Body", 
-            constr: "password (CRUCIAL), email, first_name, surname, dept_name (OPTIONAL)", 
-            resp: "JSON {message, data}" , info : "Upload user full details, quite heavy for GET method, use passwordCheck istead unless it is login"
-        },
-        {
-            name: "Courses_for_each_dept_view", method: "GET| POST", path: "/courses_for_each_dept/",
-            data: "GET: query_param | POST: Body",
-            constr: "GET: {uni_name: '', dept_name: ''} CRUCIAL | POST: {uni_name: '', dept_name: '', first_semester_courses: [], second_semester_courses: []}",
-            resp: "varies", info: "COurses each dept have like mth 101, cos 101, etc"
+         name: "PasswordCheck", method : "GET" , path: "/password_check/", data: "query_param", constr: "{email: ' ', password: ' '} OPTIONAL", resp: "JSON {message: 'correct/incorrect/User matching query does not exist.'}", info: "Password Check Endpoint"
         }
-        
     ];
 
     const container = document.getElementById('api-content');
@@ -105,13 +151,22 @@
     endpoints.forEach(ep => {
         container.innerHTML += `
             <div class="endpoint">
-                <h3>INFORMATION: ${ep.info}</h3>
-                <div><span class="method">${ep.method}</span> <a href= "${BASE_URL}${ep.path}" target = "_blank" class="url">${BASE_URL}${ep.path}</a></div>
-                <span class="label">View Name</span> <strong>${ep.name}</strong>
-                <span class="label">Data Collection Mode {Request} :   ${ep.data}</span>
-                <span class="label">Data Construction</span> <em>${ep.constr}</em>
-                <span class="label">View Response</span> ${ep.resp}
+                <h3>💡 ${ep.info}</h3>
+                <div class="url-container">
+                    <span class="method">${ep.method}</span> 
+                    <a href="${BASE_URL}${ep.path}" class="url">${BASE_URL}${ep.path}</a>
+                </div>
+                <span class="label">View Name</span> 
+                <div class="data-text"><strong>${ep.name}</strong></div>
                 
+                <span class="label">Data Collection Mode</span> 
+                <div class="data-text">${ep.data}</div>
+                
+                <span class="label">Data Construction</span> 
+                <div class="data-text"><em>${ep.constr}</em></div>
+                
+                <span class="label">View Response</span> 
+                <div class="data-text">${ep.resp}</div>
             </div>
         `;
     });
