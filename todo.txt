@@ -1,0 +1,27 @@
+This file is for todo and tracking what need to be updated in my sharpbrain app both in the frontend and the backend.
+
+19 march, 2026 - Thursday 1:34am
+
+* (FrontEnd)If you press back while in security page in the create account, the otp sent does not change like it would have when u press the button in the app, FIX.
+
+* (FrontEnd) If you press back while in security, it should be unnecesary for the otp to be invalidated unless user change their email, FIX.
+
+* (FrontEnd)Istead of just boring "email confirmed" , make it a lottie animation of confirmed, FIX.
+
+* (BackEnd) Level not specified in courses for each dept, FIX.
+
+19 march, 2026 - Thursday 2:09am
+
+
+* ✅(BackEnd) The api doc url was missing the detail of the signup link as also the link for logging in ( not ideal if you just want to check password, use password check istead), FIX.
+
+*(FrontEnd) in the uni selection in account creation, let the usee known they can swipe down to clear their selection.
+
+*(FrontEnd) once the user have agreed to account creation in the creating account, there is a delay in the page before it finally goes to the login page, fix that by sending the user to the slashscreen page soon as they click the last page in the create account, if any interuption occurs in the data upload, send them a mail with the error report and change the splahscreen to go to sign up page else it should send them a mail of account creation succesfull with some of the thing they will enjoy vis the app, and then make the slpahscreen go to the log in page, FIX.
+
+19 march, 2026 - Thursday 2:21am
+
+*(BackEnd) Create the delete account model for account deletion
+*(FrontEnd) i noticed that if user create account then come to create account again, the password verification Still stays like the last time own, FIX.
+
+* (FrontEnd) i noticed that account creation at the last part is not sending post request to thr backend , something must be wrong with the app , FIX.
