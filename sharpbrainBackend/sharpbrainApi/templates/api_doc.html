@@ -124,9 +124,14 @@
 </div>
 
 <script>
+     //   const BASE_URL = "http://127.0.0.1:8000"; 
+    
     const BASE_URL = "https://sharpbrain2-0.onrender.com"; 
     
     const endpoints = [
+        {
+        name: "View Name", method : "Methods Allowed", path: "(url-link)", data: "How the endpoint collect data(body/ query param", constr: "How to construct the data for the endpoint", resp: "endpoint response", info: "GUIDE"
+        },
         { name: "Home", method: "GET", path: "/", data: "None", constr: "None", resp: "Plain Text" , info : "Home directory" },
         { name: "API Docs", method: "GET", path: "/api_doc/", data: "None", constr: "None", resp: "This HTML" , info : "Api documentation" },
         { name: "Universities_name", method: "GET, POST", path: "/universities_name/", data: " GET: None | POST: body ", constr: "GET: None | POST : {name_of_universities : ''} (OPTIONAL)", resp: "GET: A list of JSONs {id, name_of_universities} | POST: JSON {id, name_of_universities}", info: "Post/Get the name of uni in Db" },
@@ -139,11 +144,14 @@
         { name: "OTP", method: "POST", path: "/otp/", data: "Body", constr: "email, surname, firstname (CRUCIAL)", resp: "JSON {message, otp}" , info : "Send one time password(otp) to Email." },
         { name: "viewAllUser", method: "GET", path: "/users/all/", data: "None", constr: "None", resp: "List [{first_name: '', last_name: '', email: '', username: ''}]", info: "ADMIN USAGE ONLY; (remove soon)" },
         { name: "deleteAUser", method: "DELETE", path: "/users/delete/", data:"BODY", constr: "{email: '', password: ''} CRUCIAL" , resp: "JSON {'message' : ''}", info: "Delete user account entirely" },
-        { name: "UserCustomData", method: "POST", path: "/signup/", data: "Body", constr: "password (CRUCIAL), email, first_name, surname, dept_name (OPTIONAL)", resp: "JSON {message, data}" , info : "Upload user full details" },
+        
+        { name: "UserCustomData", method: "GET` POST", path: "/signup/", data: "GET: query_params | POST: Body", constr: "GET: email, password (OPTIONAL)|| POST: password (CRUCIAL), email, first_name, surname, dept_name (OPTIONAL)", resp: "JSON {message, data}" , info : "Upload user full details & main login/signin due to other data it send in response" },
+        
         { name: "Courses_for_each_dept_view", method: "GET | POST", path: "/courses_for_each_dept/", data: "GET: query_param | POST: Body", constr: "GET: {uni_name: '', dept_name: ''} CRUCIAL | POST: {uni_name: '', dept_name: '', first_semester_courses: [], second_semester_courses: []}", resp: "varies", info: "Courses each dept have like mth 101, cos 101, etc" },
         {
          name: "PasswordCheck", method : "GET" , path: "/password_check/", data: "query_param", constr: "{email: ' ', password: ' '} OPTIONAL", resp: "JSON {message: 'correct/incorrect/User matching query does not exist.'}", info: "Password Check Endpoint"
-        }
+        },
+        
     ];
 
     const container = document.getElementById('api-content');
