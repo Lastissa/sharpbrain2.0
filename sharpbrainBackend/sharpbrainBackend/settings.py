@@ -44,7 +44,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',#from whitenoise library ; this is for render setup to avoid issue in the future about static files, though i neva dey use em but django itself have some already
+    # 'whitenoise.middleware.WhiteNoiseMiddleware',#from whitenoise library ; this is for render setup to avoid issue in the future about static files, though i neva dey use em but django itself have some already
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -147,8 +147,8 @@ EMAIL_PORT = 465
 
 
 #even though i do not understand this yet, it is for handling all the html, css and js on my proj, i do not ue those noe but django uses em , i had to do this cos of the whitenoise module i imported
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATIC_URL = '/static/'
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES" : ["rest_framework_simplejwt.authentication.JWTAuthentication"]

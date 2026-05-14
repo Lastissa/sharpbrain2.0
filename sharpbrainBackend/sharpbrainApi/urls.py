@@ -14,6 +14,7 @@ urlpatterns = [
     path("courses_for_each_dept/", views.Courses_for_each_dept_view.as_view()),
     path("password_check/", views.passwordCheck),
     path("email_check/", views.emailCheck),
+    path("user_details/", views.viewUserDetails),
     path("update_email/", views.updateUserName),
     path("update_firstname/", views.updateFirstName),
     path("update_surname/", views.updateSurName),

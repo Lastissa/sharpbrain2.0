@@ -209,38 +209,39 @@ user's question: {message}
         "token_count" : 0
     })
   
-@api_view(['POST'])
+@api_view(['POST', "GET"])
 def otp(request):
-    try:
-        email = request.data["email"]
-        surName = request.data['surname']
-        firstName = request.data['firstname']
-        userExist = SignUpData.objects.filter(user__username = email.upper()).exists()
-        if userExist:
-            send_mail("Welcome Back SharpBrainer", f"""
-This email is already been used by another sharpbrainer, please change email or proceed to login if you are the owner of this email
-Please disregard this email if you did not signup on the sharpbrain app.
-""",
-django.conf.settings.DEFAULT_FROM_EMAIL,
-[email]
-)
-            return JsonResponse({
-                "message" : "Email Already In Use",
-                "otp" : random.randint(1234567, 12345678)
-            })
-        otp = random.randint(10000,99999)
-        # cache.set(email, otp, timeout=400)  # Store OTP in cache for 5 minutes
-        send_mail(
-        'Your OTP Code From SharpBrain',
-        f"""Dear {surName.upper()} {firstName.upper()}, your otp code is {otp}, it expires in 5 minutes\nIf you wan dare me let that five minute pass.
-if the name does not match your name, just ignore this mail, Thank you.
-""",
-        django.conf.settings.DEFAULT_FROM_EMAIL,
-        [email])
-        return JsonResponse({'message': 'OTP sent to email.',
-                         'otp': otp})
-    except Exception as e:
-        return JsonResponse({'message': f'Failed to send OTP: {str(e)}', 'otp': 0}, )
+    
+        try:
+            email = request.data["email"]
+            surName = request.data['surname']
+            firstName = request.data['firstname']
+            userExist = SignUpData.objects.filter(user__username = email.upper()).exists()
+            if userExist:
+                send_mail("Welcome Back SharpBrainer", f"""
+    This email is already been used by another sharpbrainer, please change email or proceed to login if you are the owner of this email
+    Please disregard this email if you did not signup on the sharpbrain app.
+    """,
+    django.conf.settings.DEFAULT_FROM_EMAIL,
+    [email]
+    )
+                return JsonResponse({
+                    "message" : "Email Already In Use",
+                    "otp" : random.randint(1234567, 12345678)
+                })
+            otp = random.randint(10000,99999)
+            # cache.set(email, otp, timeout=400)  # Store OTP in cache for 5 minutes
+            send_mail(
+            'Your OTP Code From SharpBrain',
+            f"""Dear {surName.upper()} {firstName.upper()}, your otp code is {otp}, it expires in 5 minutes\nIf you wan dare me let that five minute pass.
+    if the name does not match your name, just ignore this mail, Thank you.
+    """,
+            django.conf.settings.DEFAULT_FROM_EMAIL,
+            [email])
+            return JsonResponse({'message': 'OTP sent to email.',
+                            'otp': otp})
+        except Exception as e:
+            return JsonResponse({'message': f'Failed to send OTP: {str(e)}', 'otp': 0}, )
 
 
 
@@ -451,6 +452,16 @@ def emailCheck(request):
     object = User.objects.filter(username = email.upper()).exists()
     return JsonResponse({"message" : str(object)})
         
+    
+@api_view(["GET"])
+def viewUserDetails(request):
+    email = request.query_params["email"]
+    try:
+        object = User.objects.get(email__iexact = email.strip())
+        serializer = UserSerializer(object, many = False)
+        return Response(serializer.data)
+    except Exception as e:
+        return Response({"message" : f"{e}"})
     
 @api_view(["PATCH"])
 def updateUserName(request):
